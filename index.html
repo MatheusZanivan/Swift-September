@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Fundo Verde Metálico + Download</title>
+
+  <!-- html2canvas -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js" defer></script>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      gap: 16px;
+      background: #111;
+      padding: 24px;
+      min-height: 100vh;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+      border-radius: 10px;
+      padding: 10px 16px;
+      background: #1f8a3a;
+      color: #fff;
+      font-weight: 600;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    }
+
+    .page-background {
+      width: 210mm;
+      height: 297mm;
+      /* juntamos tudo em um único background */
+      background: 
+        linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%,
+          rgba(255, 255, 255, 0.05) 25%,
+          rgba(0, 0, 0, 0.05) 50%,
+          rgba(255, 255, 255, 0.08) 75%,
+          rgba(255, 255, 255, 0.12) 100%),
+        conic-gradient(from 0deg at center,
+          #90ee90 0deg,
+          #6b8e23 60deg,
+          #4a7c59 120deg,
+          #2d5016 180deg,
+          #1a3d0a 240deg,
+          #8fbc8f 300deg,
+          #90ee90 360deg);
+      background-blend-mode: overlay;
+      box-shadow: 0 0 50px rgba(0, 0, 0, 0.3);
+    }
+
+    @media screen and (max-width: 1200px) {
+      .page-background {
+        width: 100vw;
+        height: calc(100vw * (297 / 210));
+        max-width: 210mm;
+        max-height: 297mm;
+      }
+    }
+  </style>
+</head>
+<body>
+  <button id="downloadJpegBtn">Baixar JPEG</button>
+  <div id="target" class="page-background"></div>
+
+  <script>
+    window.addEventListener('load', function () {
+      const btn = document.getElementById('downloadJpegBtn');
+      const target = document.getElementById('target');
+
+      async function downloadAsJPEG() {
+        const canvas = await html2canvas(target, {
+          backgroundColor: null,
+          scale: 1,
+          useCORS: true
+        });
+
+        const outCanvas = document.createElement('canvas');
+        outCanvas.width = canvas.width;
+        outCanvas.height = canvas.height;
+        const ctx = outCanvas.getContext('2d');
+
+        ctx.fillStyle = '#ffffff'; // fundo branco
+        ctx.fillRect(0, 0, outCanvas.width, outCanvas.height);
+        ctx.drawImage(canvas, 0, 0);
+
+        const dataURL = outCanvas.toDataURL('image/jpeg', 0.95);
+        const a = document.createElement('a');
+        a.href = dataURL;
+        a.download = 'retangulo-verde.jpg';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+      }
+
+      btn.addEventListener('click', downloadAsJPEG);
+    });
+  </script>
+</body>
+</html>
