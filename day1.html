@@ -1,70 +1,153 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Day 1 – Swift language fundamentals | Swift September</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
-  <meta name="description" content="Swift September – Day 1: Swift language fundamentals" />
-</head>
-<body>
-  <div class="container backbar">
-    <a class="back-btn" href="./index.html" aria-label="Back to home">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M15 19l-7-7 7-7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Back
-    </a>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Swift language fundamentals | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 1: Swift language fundamentals" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
 
-  <main>
-    <div class="day-hero">
-      <h1>Day 1: Swift language fundamentals</h1>
-      <p class="lead">A concise, practical walkthrough focused on real-world iOS development. Keep your editor open and try each step as you read.</p>
-    </div>
+      <div class="day-content">
+        <!-- Breadcrumbs (componente visual) -->
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li class="crumb">
+              <span class="chev" aria-hidden="true"><</span>
+              <a href="./index.html">home</a><span class="sep">/</span><span aria-current="page">day 1</span>
+            </li>
+          </ul>
+        </nav>
 
-    <section class="section">
-      <h2>Introduction</h2>
-      <p>
-        Briefly frame why this topic matters, where it shows up in everyday iOS work, and what you’ll be able to do by the end.
-        Keep this oriented to real tasks and outcomes.
-      </p>
-    </section>
+        <div class="day-hero">
+          <h1>Swift language fundamentals</h1>
+        </div>
 
-    <section class="section">
-      <h2>Key points</h2>
-      <ul>
-        <li>Concept 1 that’s essential to understand.</li>
-        <li>Concept 2 with a quick example and a mental model.</li>
-        <li>Concept 3 with a caveat or best practice.</li>
-      </ul>
-    </section>
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
 
-    <section class="section">
-      <h2>Common pitfalls</h2>
-      <ul>
-        <li>Typical mistake 1 and how to avoid it.</li>
-        <li>Typical mistake 2 and how to spot it during review.</li>
-      </ul>
-    </section>
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Briefly frame why this topic matters, where it shows up in everyday
+            iOS work, and what you’ll be able to do by the end. Keep this
+            oriented to real tasks and outcomes.
+          </p>
 
-    <section class="section">
-      <h2>FAQs</h2>
-      <ul>
-        <li><strong style="font-weight:600">When should I use this vs. an alternative?</strong> Short, opinionated guidance.</li>
-        <li><strong style="font-weight:600">What if my app has constraint X?</strong> A pragmatic workaround or decision rule.</li>
-      </ul>
-    </section>
+          <div class="codebox" role="region" aria-label="Swift example: var vs let">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// var: mutable, let: constante
+var name = "Matheus"
+name.append("!")    // ok
 
-    <section class="section" style="margin-bottom: 40px;">
-      <h2>Next steps</h2>
-      <p>
-        Suggest a mini-practice or a related Apple doc to skim next. Point readers to the next day’s topic for continuity.
-      </p>
-    </section>
-  </main>
-</body>
+let maxItems = 10
+// maxItems = 12   // erro: 'let' é imutável
+
+// inferência e anotações de tipo
+let count: Int = 3
+let pi = 3.14159    // Double inferido</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Key points">Key points</h2>
+          <ul>
+            <li>Concept 1 that’s essential to understand.</li>
+            <li>Concept 2 with a quick example and a mental model.</li>
+            <li>Concept 3 with a caveat or best practice.</li>
+          </ul>
+
+          <div class="codebox" role="region" aria-label="Swift example: optionals basics">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Optionals representam ausência de valor
+var nickname: String? = nil
+nickname = "Zani"
+
+// unwrapping seguro com if let
+if let nick = nickname {
+    print("Hello, \(nick)")
+} else {
+    print("No nickname yet")
+}
+
+// coalescência nula
+let displayName = nickname ?? "Guest"</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Common pitfalls">Common pitfalls</h2>
+          <ul>
+            <li>Typical mistake 1 and how to avoid it.</li>
+            <li>Typical mistake 2 and how to spot it during review.</li>
+          </ul>
+
+          <div class="codebox" role="region" aria-label="Swift example: value vs identity">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// == compara valor; === compara identidade de referência (classes)
+class Box { let value: Int; init(_ v: Int) { value = v } }
+
+let a = Box(1)
+let b = Box(1)
+print(a === b) // false: objetos distintos
+print(a.value == b.value) // true: mesmo valor</code></pre>
+          </div>
+        </section>
+
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Suggest a mini-practice or a related Apple doc to skim next. Point
+            readers to the next day’s topic for continuity.
+          </p>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
 </html>
