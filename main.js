@@ -1,3 +1,4 @@
+// --------- Configuração dos tópicos (home) ---------
 const topics = [
   "Swift language fundamentals",
   "Optionals, generics, and protocol-oriented programming",
@@ -60,6 +61,7 @@ function setCoverForDay(coverEl, dayNumber) {
     coverEl.style.backgroundRepeat = "no-repeat";
   };
   img.onerror = () => {
+    coverEl.style.backgroundImage = ''; // mantém o fallback do CSS
     coverEl.style.backgroundPosition = "center";
   };
   img.src = candidate;
@@ -208,7 +210,9 @@ document.addEventListener('click', async (e) => {
   }
 });
 
-// Converte 1..3999 para algarismos romanos
+// ------------------------------
+// Numeração romana + ToC
+// ------------------------------
 function toRoman(n) {
   const map = [
     [1000,'M'],[900,'CM'],[500,'D'],[400,'CD'],
@@ -223,7 +227,6 @@ function toRoman(n) {
   return res;
 }
 
-// Substitui sua função atual por esta:
 function numberHeadingsAndBuildTOC() {
   const headings = document.querySelectorAll('.section > h2');
   const toc = document.getElementById('toc');
@@ -233,14 +236,10 @@ function numberHeadingsAndBuildTOC() {
     const label = h2.getAttribute('data-title') || h2.textContent.trim();
     const roman = toRoman(idx + 1);
 
-    // id estável a partir do label (sem numeração)
     const id = label.toLowerCase().replace(/\s+/g, '-').replace(/[^\w-]/g, '');
     h2.id = id;
+    h2.innerHTML = `<span class="sec-num">${roman}.</span>${label}`;
 
-    // mostra romano no H2
-    h2.innerHTML = `<span class="sec-num">${roman}.</span> ${label}`;
-
-    // entrada no ToC
     if (toc) {
       const li = document.createElement('li');
       const a = document.createElement('a');
@@ -252,41 +251,9 @@ function numberHeadingsAndBuildTOC() {
   });
 }
 
-// Mantém seu scroll-spy, só garantindo a classe .active
-function initScrollSpy() {
-  const toc = document.getElementById('toc');
-  if (!toc) return;
-
-  const links = Array.from(toc.querySelectorAll('a'));
-  const sections = links
-    .map(a => document.querySelector(a.getAttribute('href')))
-    .filter(Boolean);
-
-  if (!sections.length) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      const id = `#${entry.target.id}`;
-      const link = links.find(a => a.getAttribute('href') === id);
-      if (!link) return;
-
-      if (entry.isIntersecting) {
-        links.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-      }
-    });
-  }, {
-    rootMargin: '0px 0px -70% 0px',
-    threshold: 0.1
-  });
-
-  sections.forEach(sec => observer.observe(sec));
-
-  // estado inicial
-  links[0]?.classList.add('active');
-}
-
-
+// ------------------------------
+// Scroll Spy (menu flutuante)
+// ------------------------------
 function initScrollSpy() {
   const links = Array.from(document.querySelectorAll('#toc a'));
   const sections = links
@@ -295,30 +262,163 @@ function initScrollSpy() {
 
   if (!sections.length) return;
 
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      const id = '#' + entry.target.id;
-      const link = links.find(a => a.getAttribute('href') === id);
-      if (!link) return;
-      if (entry.isIntersecting) {
-        links.forEach(l => l.classList.remove('active'));
-        link.classList.add('active');
-      }
+  let sectionBounds = [];
+
+  function recalcBounds() {
+    sectionBounds = sections.map(sec => {
+      const rect = sec.getBoundingClientRect();
+      const top = window.scrollY + rect.top;
+      const bottom = top + sec.offsetHeight;
+      return { id: sec.id, top, bottom };
     });
-  }, {
-    rootMargin: '-50% 0px -40% 0px', // ativa por volta do meio da tela
-    threshold: 0
+  }
+
+  function setActiveByScroll() {
+    if (!sectionBounds.length) return;
+    const probe = window.scrollY + window.innerHeight * 0.5;
+
+    if (window.scrollY <= 2) {
+      activate(sectionBounds[0].id);
+      return;
+    }
+
+    const atBottom = Math.ceil(window.innerHeight + window.scrollY) >= document.documentElement.scrollHeight - 2;
+    if (atBottom) {
+      activate(sectionBounds[sectionBounds.length - 1].id);
+      return;
+    }
+
+    let currentId = sectionBounds[0].id;
+    for (const sb of sectionBounds) {
+      if (probe >= sb.top) currentId = sb.id;
+      else break;
+    }
+    activate(currentId);
+  }
+
+  function activate(id) {
+    links.forEach(l => l.classList.toggle('active', l.getAttribute('href') === `#${id}`));
+  }
+
+  links.forEach(a => {
+    a.addEventListener('click', e => {
+      e.preventDefault();
+      const target = document.querySelector(a.getAttribute('href'));
+      if (!target) return;
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      history.replaceState(null, '', a.getAttribute('href'));
+      links.forEach(l => l.classList.remove('active'));
+      a.classList.add('active');
+    });
   });
 
-  sections.forEach(sec => observer.observe(sec));
+  recalcBounds();
+  setActiveByScroll();
+  window.addEventListener('scroll', setActiveByScroll, { passive: true });
+  window.addEventListener('resize', () => { recalcBounds(); setActiveByScroll(); });
+  window.setTimeout(() => { recalcBounds(); setActiveByScroll(); }, 300);
 }
 
-// no final do DOMContentLoaded:
+// ------------------------------
+// 1) Normalizar indentação de todos os <code>
+// ------------------------------
+function normalizeAllCodeIndentation() {
+  document.querySelectorAll('pre code, code').forEach(codeEl => {
+    // pega texto já decodificado (innerText) e normaliza
+    let text = codeEl.innerText.replace(/\t/g, '  ');        // tabs -> 2 espaços
+    text = text.replace(/\s+$/gm, '');                        // trim fim de linha
+    text = text.replace(/^\s*\n+|\n+\s*$/g, '');              // remove linhas vazias no início/fim
+
+    const lines = text.split('\n');
+    const indents = lines
+      .filter(l => l.trim().length > 0)
+      .map(l => (l.match(/^ +/) || [''])[0].length);
+
+    const minIndent = indents.length ? Math.min(...indents) : 0;
+    const dedented = lines
+      .map(l => (l.startsWith(' '.repeat(minIndent)) ? l.slice(minIndent) : l))
+      .join('\n');
+
+    codeEl.textContent = dedented;
+  });
+}
+
+// ------------------------------
+// 2) Breadcrumbs sem espaços extras ("<Home/Day X")
+// ------------------------------
+function initBreadcrumbs() {
+  const nav = document.querySelector('.breadcrumbs ul');
+  if (!nav) return;
+
+  // Detecta o dia a partir da URL (dayN.html)
+  const m = (location.pathname.match(/day(\d+)\.html$/i) || []);
+  const day = m[1] ? parseInt(m[1], 10) : null;
+
+  nav.innerHTML = ''; // limpa qualquer HTML quebrado
+
+  const li = document.createElement('li');
+  li.className = 'crumb';
+
+  const chev = document.createElement('span');
+  chev.className = 'chev';
+  chev.setAttribute('aria-hidden', 'true');
+  chev.textContent = '<'; // colado
+
+  const home = document.createElement('a');
+  home.href = './index.html';
+  home.textContent = 'Home';
+
+  const sep = document.createElement('span');
+  sep.className = 'sep';
+  sep.textContent = '/';
+
+  const current = document.createElement('span');
+  current.setAttribute('aria-current', 'page');
+  current.textContent = day ? `Day ${day}` : document.title || 'Current';
+
+  li.appendChild(chev);
+  li.appendChild(home);
+  li.appendChild(sep);
+  li.appendChild(current);
+  nav.appendChild(li);
+}
+
+// ------------------------------
+// 3) Capa lateral automática por página (left-rail)
+// ------------------------------
+function initDayCover() {
+  const cover = document.querySelector('.left-rail .floating-cover');
+  if (!cover) return;
+
+  // tenta via URL
+  let dayNumber = null;
+  const m = (location.pathname.match(/day(\d+)\.html$/i) || []);
+  if (m[1]) dayNumber = parseInt(m[1], 10);
+
+  // fallback: tenta achar "Day N" no breadcrumbs
+  if (!dayNumber) {
+    const current = document.querySelector('.breadcrumbs [aria-current="page"]');
+    if (current) {
+      const mm = current.textContent.match(/Day\s+(\d+)/i);
+      if (mm && mm[1]) dayNumber = parseInt(mm[1], 10);
+    }
+  }
+
+  if (dayNumber) {
+    setCoverForDay(cover, dayNumber);
+  }
+}
+
+// ------------------------------
+// Inicialização
+// ------------------------------
 document.addEventListener('DOMContentLoaded', () => {
   buildCarousel();
   setupCarouselButtons();
   initCodeBoxes();
+  normalizeAllCodeIndentation();   // 1) corrige indentação dos códigos
   numberHeadingsAndBuildTOC();
-  initScrollSpy(); // <- adiciona isso
+  initBreadcrumbs();               // 2) breadcrumbs "<Home/Day X" sem espaços extras
+  initDayCover();                  // 3) capa lateral automática por dia
+  initScrollSpy();
 });
-

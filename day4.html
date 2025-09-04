@@ -1,70 +1,164 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Day 4 – Swift concurrency basics (async/await, Task, TaskGroup, cancellation) | Swift September</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
-  <meta name="description" content="Swift September – Day 4: Swift concurrency basics (async/await, Task, TaskGroup, cancellation)" />
-</head>
-<body>
-  <div class="container backbar">
-    <a class="back-btn" href="./index.html" aria-label="Back to home">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M15 19l-7-7 7-7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Back
-    </a>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Swift concurrency basics (async/await, Task, TaskGroup, cancellation) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 4: Swift concurrency basics (async/await, Task, TaskGroup, cancellation)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
 
-  <main>
-    <div class="day-hero">
-      <h1>Day 4: Swift concurrency basics (async/await, Task, TaskGroup, cancellation)</h1>
-      <p class="lead">A concise, practical walkthrough focused on real-world iOS development. Keep your editor open and try each step as you read.</p>
-    </div>
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul></ul>
+        </nav>
 
-    <section class="section">
-      <h2>Introduction</h2>
-      <p>
-        Briefly frame why this topic matters, where it shows up in everyday iOS work, and what you’ll be able to do by the end.
-        Keep this oriented to real tasks and outcomes.
-      </p>
-    </section>
+        <div class="day-hero">
+          <h1>Swift concurrency basics (async/await, Task, TaskGroup, cancellation)</h1>
+        </div>
 
-    <section class="section">
-      <h2>Key points</h2>
-      <ul>
-        <li>Concept 1 that’s essential to understand.</li>
-        <li>Concept 2 with a quick example and a mental model.</li>
-        <li>Concept 3 with a caveat or best practice.</li>
-      </ul>
-    </section>
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
 
-    <section class="section">
-      <h2>Common pitfalls</h2>
-      <ul>
-        <li>Typical mistake 1 and how to avoid it.</li>
-        <li>Typical mistake 2 and how to spot it during review.</li>
-      </ul>
-    </section>
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Swift Concurrency is one of the most impactful improvements in modern Swift, helping developers write asynchronous code that is clear, concise, and safe. Instead of juggling completion handlers and nested closures, you can now express complex asynchronous workflows in a way that looks and feels like synchronous code. In this article, we will cover the foundations: async/await, Task, TaskGroup, and cancellation. These tools are essential for building smooth, responsive, and scalable iOS apps.</p>
+        </section>
 
-    <section class="section">
-      <h2>FAQs</h2>
-      <ul>
-        <li><strong style="font-weight:600">When should I use this vs. an alternative?</strong> Short, opinionated guidance.</li>
-        <li><strong style="font-weight:600">What if my app has constraint X?</strong> A pragmatic workaround or decision rule.</li>
-      </ul>
-    </section>
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="async/await">async/await</h2>
+          <p>With <code>async/await</code>, asynchronous code reads top-to-bottom like synchronous code. This makes reasoning about logic much simpler, especially when chaining multiple operations.</p>
+          <div class="codebox" role="region" aria-label="Swift example: async function with await">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>func fetchUserProfile() async throws -> User {
+  let data = try await URLSession.shared.data(from: profileURL).0
+  return try JSONDecoder().decode(User.self, from: data)
+}
 
-    <section class="section" style="margin-bottom: 40px;">
-      <h2>Next steps</h2>
-      <p>
-        Suggest a mini-practice or a related Apple doc to skim next. Point readers to the next day’s topic for continuity.
-      </p>
-    </section>
-  </main>
-</body>
+Task {
+  if let user = try? await fetchUserProfile() {
+    print("Loaded: \\(user.name)")
+  }
+}</code></pre>
+          </div>
+          <p><strong>Best practice:</strong> Use async/await wherever possible instead of completion handlers for new code. It improves readability and integrates well with structured concurrency.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Task">Task</h2>
+          <p>A <code>Task</code> lets you create units of asynchronous work. Tasks execute concurrently without blocking the current thread, making them ideal for launching background operations.</p>
+          <div class="codebox" role="region" aria-label="Swift example: launching a task">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>Task {
+  let posts = try await fetchPosts()
+  print("Fetched \\(posts.count) posts")
+}</code></pre>
+          </div>
+          <p><strong>Tip:</strong> By default, tasks inherit the priority of the context they’re created in, but you can also set explicit priorities for critical work.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="TaskGroup">TaskGroup</h2>
+          <p>A <code>TaskGroup</code> allows you to run multiple tasks in parallel and collect their results. This is helpful when you need to fetch or process several independent pieces of data at once.</p>
+          <div class="codebox" role="region" aria-label="Swift example: using TaskGroup for parallel tasks">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let users = try await withTaskGroup(of: User.self) { group in
+  for id in [1, 2, 3] {
+    group.addTask {
+      try await fetchUser(id: id)
+    }
+  }
+  return try await group.reduce(into: []) { $0.append($1) }
+}</code></pre>
+          </div>
+          <p><strong>Common pitfall:</strong> Forgetting to handle thrown errors in a group will propagate them and cancel the entire group. Make sure that’s the behavior you want.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Cancellation">Cancellation</h2>
+          <p>Tasks in Swift are cooperative. They don’t stop immediately, but they can check for cancellation and exit gracefully. This helps free resources without leaving work in an inconsistent state.</p>
+          <div class="codebox" role="region" aria-label="Swift example: cooperative cancellation">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>func loadImages() async {
+  for url in imageURLs {
+    try Task.checkCancellation()
+    let _ = try await downloadImage(from: url)
+  }
+}</code></pre>
+          </div>
+          <p><strong>Best practice:</strong> Always check for cancellation inside loops or long-running operations. This makes your code responsive to user intent, like when a user navigates away from a screen.</p>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>Swift’s concurrency model brings structure and clarity to asynchronous programming. By using async/await, Tasks, TaskGroups, and cancellation effectively, you can create apps that are not only more responsive but also easier to maintain. These building blocks form the foundation for advanced concurrency patterns used throughout modern iOS development.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try creating a small demo app that fetches multiple APIs in parallel with a TaskGroup, and add cancellation support when the user leaves the screen. This will help solidify your understanding of structured concurrency.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/swift/concurrency" target="_blank" rel="noopener">Concurrency - Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/" target="_blank" rel="noopener">Concurrency - Swift Book</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
 </html>

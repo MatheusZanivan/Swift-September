@@ -1,70 +1,155 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Day 3 – Memory management with ARC (retain cycles, capture lists) | Swift September</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="./styles.css" />
-  <meta name="description" content="Swift September – Day 3: Memory management with ARC (retain cycles, capture lists)" />
-</head>
-<body>
-  <div class="container backbar">
-    <a class="back-btn" href="./index.html" aria-label="Back to home">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-        <path d="M15 19l-7-7 7-7" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-      Back
-    </a>
-  </div>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Memory management with ARC (retain cycles, capture lists) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 3: Memory management with ARC (retain cycles, capture lists)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
 
-  <main>
-    <div class="day-hero">
-      <h1>Day 3: Memory management with ARC (retain cycles, capture lists)</h1>
-      <p class="lead">A concise, practical walkthrough focused on real-world iOS development. Keep your editor open and try each step as you read.</p>
-    </div>
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul></ul>
+      	</nav>
 
-    <section class="section">
-      <h2>Introduction</h2>
-      <p>
-        Briefly frame why this topic matters, where it shows up in everyday iOS work, and what you’ll be able to do by the end.
-        Keep this oriented to real tasks and outcomes.
-      </p>
-    </section>
+        <div class="day-hero">
+          <h1>Memory management with ARC (retain cycles, capture lists)</h1>
+        </div>
 
-    <section class="section">
-      <h2>Key points</h2>
-      <ul>
-        <li>Concept 1 that’s essential to understand.</li>
-        <li>Concept 2 with a quick example and a mental model.</li>
-        <li>Concept 3 with a caveat or best practice.</li>
-      </ul>
-    </section>
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
 
-    <section class="section">
-      <h2>Common pitfalls</h2>
-      <ul>
-        <li>Typical mistake 1 and how to avoid it.</li>
-        <li>Typical mistake 2 and how to spot it during review.</li>
-      </ul>
-    </section>
+        <!-- 1) Introduction (mandatory, first) -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Automatic Reference Counting (ARC) is the system that manages memory in Swift. For most iOS development, ARC feels invisible, freeing us from manual memory allocation and release. But it is not foolproof. If objects keep strong references to each other, they can form retain cycles and never be deallocated. Closures, especially when capturing <code>self</code>, are a common source of memory leaks. In this article, we’ll explore how to recognize and prevent these issues with capture lists and careful use of weak and unowned references.</p>
+        </section>
 
-    <section class="section">
-      <h2>FAQs</h2>
-      <ul>
-        <li><strong style="font-weight:600">When should I use this vs. an alternative?</strong> Short, opinionated guidance.</li>
-        <li><strong style="font-weight:600">What if my app has constraint X?</strong> A pragmatic workaround or decision rule.</li>
-      </ul>
-    </section>
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Retain Cycles">Retain Cycles</h2>
+          <p>A retain cycle occurs when two objects hold strong references to each other, preventing ARC from deallocating them. The most common case is a view controller holding a closure that strongly captures <code>self</code>.</p>
+          <div class="codebox" role="region" aria-label="Swift example: retain cycle with closure">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>class MyViewController: UIViewController {
+    var completion: (() -> Void)?
 
-    <section class="section" style="margin-bottom: 40px;">
-      <h2>Next steps</h2>
-      <p>
-        Suggest a mini-practice or a related Apple doc to skim next. Point readers to the next day’s topic for continuity.
-      </p>
-    </section>
-  </main>
-</body>
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        // This creates a retain cycle: self -> completion -> self
+        completion = {
+            print("Button tapped in \(self)")
+        }
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Capture Lists">Capture Lists</h2>
+          <p>Capture lists tell a closure how to hold references to objects. By using <code>[weak self]</code> or <code>[unowned self]</code>, you break strong reference cycles while still allowing the closure to access <code>self</code>.</p>
+          <div class="codebox" role="region" aria-label="Swift example: weak self capture list">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>completion = { [weak self] in
+    guard let self = self else { return }
+    print("Safe capture of \(self)")
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Weak vs Unowned">Weak vs Unowned</h2>
+          <p>Both <code>weak</code> and <code>unowned</code> avoid strong reference cycles, but they behave differently:</p>
+          <ul>
+            <li><strong>weak</strong>: Creates an optional reference. It becomes <code>nil</code> automatically when the object is deallocated.</li>
+            <li><strong>unowned</strong>: Creates a non-optional reference. It assumes the object will always exist, but if accessed after deallocation, it will crash.</li>
+          </ul>
+          <div class="codebox" role="region" aria-label="Swift example: weak vs unowned">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>class User {
+    let name: String
+    init(name: String) { self.name = name }
+}
+
+class Profile {
+    weak var owner: User?      // safe, can become nil
+    unowned var account: User  // unsafe if User is deallocated
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Best practices">Best practices</h2>
+          <ul>
+            <li>Default to <code>[weak self]</code> when capturing <code>self</code> inside closures.</li>
+            <li>Use <code>[unowned self]</code> only if the object is guaranteed to outlive the closure.</li>
+            <li>Test your code with memory graph debugging in Xcode to confirm no leaks exist.</li>
+            <li>Keep closures short and avoid unnecessary captures.</li>
+          </ul>
+        </section>
+
+        <!-- 3) Conclusion (mandatory) -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>ARC removes most of the burden of memory management, but retain cycles can silently break your app’s performance and stability. By using capture lists wisely and understanding when to apply <code>weak</code> vs <code>unowned</code>, you ensure your objects are properly released and your app runs smoothly. Always be intentional with your references, especially in closures.</p>
+        </section>
+
+        <!-- 4) Next steps (mandatory, last) -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try creating a small sample project with a view controller and a closure property. First, reproduce a retain cycle, then fix it using a capture list. Use Xcode’s memory graph debugger to confirm that your objects are properly released. For a deeper dive, read the official Swift documentation on ARC.</p>
+          <ul>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/automaticreferencecounting" target="_blank" rel="noopener">Automatic Reference Counting - Swift Book</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
 </html>

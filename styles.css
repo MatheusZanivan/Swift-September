@@ -252,3 +252,22 @@ body {
   font-weight: 700;
   margin-right: 8px;
 }
+
+/* Links globais: brancos e em negrito (sem azul padrão) */
+a { color: #fff; font-weight: 700; }
+a:visited { color: #fff; }
+
+/* Breadcrumbs: "<" colado e barra sem espaços extras (o espaçamento é via CSS, não via texto) */
+.crumb { display: inline-flex; align-items: center; gap: 6px; color: #fff; font-weight: 700; }
+.crumb .chev { margin-right: 2px; line-height: 1; } /* "<" bem próximo do Home */
+.crumb .sep { margin: 0 4px; opacity: 0.9; }
+
+/* Menu flutuante à direita: links brancos e negrito quando ativos */
+.floating-menu a { color: #fff; opacity: 0.5; text-decoration: none; font-weight: 500; transition: opacity .2s ease; }
+.floating-menu a:hover { opacity: 0.75; }
+.floating-menu a.active { opacity: 1; font-weight: 700; }
+
+/* Capa lateral: mantém fallback, mas JS troca a imagem conforme o dia */
+.floating-cover {
+  background: rgba(0,0,0,0.35) url('./images/day1Cover.png') center/cover no-repeat; /* fallback */
+}

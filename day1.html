@@ -1,153 +1,344 @@
 <!DOCTYPE html>
+
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Swift language fundamentals | Swift September</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="./styles.css" />
-    <meta name="description" content="Swift September – Day 1: Swift language fundamentals" />
-  </head>
-  <body class="day">
-    <main class="page-grid">
-      <aside class="left-rail">
-        <div class="floating-cover" aria-hidden="true"></div>
-      </aside>
 
-      <div class="day-content">
-        <!-- Breadcrumbs (componente visual) -->
-        <nav class="breadcrumbs" aria-label="Breadcrumb">
-          <ul>
-            <li class="crumb">
-              <span class="chev" aria-hidden="true"><</span>
-              <a href="./index.html">home</a><span class="sep">/</span><span aria-current="page">day 1</span>
-            </li>
-          </ul>
-        </nav>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Swift language fundamentals | Swift September</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./styles.css" />
+  <meta name="description" content="Swift September – Day 1: Swift language fundamentals" />
+</head>
 
-        <div class="day-hero">
-          <h1>Swift language fundamentals</h1>
-        </div>
+<body class="day">
+  <main class="page-grid">
+    <aside class="left-rail">
+      <div class="floating-cover" aria-hidden="true"></div>
+    </aside>
 
-        <div class="author-row">
-          <img
-            src="./images/profilePic.png"
-            alt="Author"
-            class="author-avatar"
-            width="40"
-            height="40"
-            loading="lazy"
-          />
-          <div class="author-name">
-            <strong>Matheus Z. Andrade</strong> | iOS Engineer
-          </div>
-          <div class="author-line" aria-hidden="true"></div>
-        </div>
-
-        <section class="section">
-          <h2 data-title="Introduction">Introduction</h2>
-          <p>
-            Briefly frame why this topic matters, where it shows up in everyday
-            iOS work, and what you’ll be able to do by the end. Keep this
-            oriented to real tasks and outcomes.
-          </p>
-
-          <div class="codebox" role="region" aria-label="Swift example: var vs let">
-            <button class="codebox-copy" type="button" aria-label="Copy code">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6"/>
-                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"/>
-              </svg>
-            </button>
-            <div class="codebox-toast">Copied</div>
-            <pre><code>// var: mutable, let: constante
-var name = "Matheus"
-name.append("!")    // ok
-
-let maxItems = 10
-// maxItems = 12   // erro: 'let' é imutável
-
-// inferência e anotações de tipo
-let count: Int = 3
-let pi = 3.14159    // Double inferido</code></pre>
-          </div>
-        </section>
-
-        <section class="section">
-          <h2 data-title="Key points">Key points</h2>
-          <ul>
-            <li>Concept 1 that’s essential to understand.</li>
-            <li>Concept 2 with a quick example and a mental model.</li>
-            <li>Concept 3 with a caveat or best practice.</li>
-          </ul>
-
-          <div class="codebox" role="region" aria-label="Swift example: optionals basics">
-            <button class="codebox-copy" type="button" aria-label="Copy code">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6"/>
-                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"/>
-              </svg>
-            </button>
-            <div class="codebox-toast">Copied</div>
-            <pre><code>// Optionals representam ausência de valor
-var nickname: String? = nil
-nickname = "Zani"
-
-// unwrapping seguro com if let
-if let nick = nickname {
-    print("Hello, \(nick)")
-} else {
-    print("No nickname yet")
-}
-
-// coalescência nula
-let displayName = nickname ?? "Guest"</code></pre>
-          </div>
-        </section>
-
-        <section class="section">
-          <h2 data-title="Common pitfalls">Common pitfalls</h2>
-          <ul>
-            <li>Typical mistake 1 and how to avoid it.</li>
-            <li>Typical mistake 2 and how to spot it during review.</li>
-          </ul>
-
-          <div class="codebox" role="region" aria-label="Swift example: value vs identity">
-            <button class="codebox-copy" type="button" aria-label="Copy code">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6"/>
-                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"/>
-              </svg>
-            </button>
-            <div class="codebox-toast">Copied</div>
-            <pre><code>// == compara valor; === compara identidade de referência (classes)
-class Box { let value: Int; init(_ v: Int) { value = v } }
-
-let a = Box(1)
-let b = Box(1)
-print(a === b) // false: objetos distintos
-print(a.value == b.value) // true: mesmo valor</code></pre>
-          </div>
-        </section>
-
-        <section class="section" style="margin-bottom: 40px;">
-          <h2 data-title="Next steps">Next steps</h2>
-          <p>
-            Suggest a mini-practice or a related Apple doc to skim next. Point
-            readers to the next day’s topic for continuity.
-          </p>
-        </section>
+    <div class="day-content">
+      <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ul></ul>
+      </nav>
+      <div class="day-hero">
+        <h1>Swift language fundamentals</h1>
       </div>
 
-      <nav class="right-rail">
-        <div class="floating-menu">
-          <ul id="toc"></ul>
+      <div class="author-row">
+        <img src="./images/profilePic.png" alt="Author" class="author-avatar" width="40" height="40" loading="lazy" />
+        <div class="author-name">
+          <strong>Matheus Z. Andrade</strong> | iOS Engineer
         </div>
-      </nav>
-    </main>
+        <div class="author-line" aria-hidden="true"></div>
+      </div>
 
-    <script src="./main.js" defer></script>
-  </body>
+      <!-- 1) Introduction (mandatory, first) -->
+      <section class="section">
+        <h2 data-title="Introduction">Introduction</h2>
+        <p>Swift is the foundation for every iOS developer, and mastering its fundamentals ensures your code stays
+          clean, safe, and scalable. Before diving into advanced topics, it’s crucial to strengthen the building blocks
+          you’ll use every day: optionals, type inference, value vs. reference types, closures, and protocols. In this
+          article, we’ll revisit each of these essentials with short, practical examples you can try out in a
+          playground. The goal is to reinforce best practices and clarity, giving you a solid base that makes both UIKit
+          and SwiftUI projects easier to build and maintain.</p>
+      </section>
+
+      <!-- 2) Topic sections (2–6). Use multiple sections like this. -->
+      <section class="section">
+        <h2 data-title="Optionals">Optionals</h2>
+        <p>Optionals model the absence of a value explicitly. Reach for <code>if let</code>/<code>guard let</code> to
+          unwrap safely; use <code>!</code> only when you’re 100% sure a value exists.</p>
+        <div class="codebox" role="region" aria-label="Swift example: optional binding with guard">
+          <button class="codebox-copy" type="button" aria-label="Copy code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>func loadUsername(from dict: [String: Any]) -&gt; String {
+      guard let name = dict["username"] as? String, !name.isEmpty else {
+        return "Guest"
+      }
+    return name  
+}
+
+</code></pre>
+        </div>
+
+        <h3>Wrong vs Right</h3>
+        <p>Avoid force unwrapping during normal control flow.</p>
+        <div class="codebox" role="region" aria-label="Swift example: optional unwrapping wrong vs right">
+          <button class="codebox-copy" type="button" aria-label="Copy code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>
+  // ❌ Wrong: will crash if token is nil
+‎ 
+    let token = ProcessInfo.processInfo.environment\["API\_TOKEN"]!
+    print(token.count)
+    ‎ 
+  // ✅ Right: handle absence
+‎ 
+    if let token = ProcessInfo.processInfo.environment\["API\_TOKEN"], !token.isEmpty {
+      print(token.count)
+    } else {
+      print("Missing API token")
+  }</code></pre>
+        </div>
+        <p>Learn more: Optional basics and patterns are covered in <a
+            href="https://developer.apple.com/documentation/swift/optional" target="_blank" rel="noopener">Optionals —
+            Apple Docs</a>.</p>
+      </section>
+
+
+      <section class="section">
+        <h2 data-title="Type inference">Type inference</h2>
+        <p>Swift infers types from context so your code stays concise <em>without</em> losing safety. Prefer explicit
+          types when readability benefits or when inference is ambiguous.</p>
+        <div class="codebox" role="region" aria-label="Swift example: type inference and annotation">
+          <button class="codebox-copy" type="button" aria-label="Copy code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>let numbers = [1, 2, 3]      // [Int]
+            ‎ 
+let pi = 3.14159              // Double
+‎ 
+let isEnabled: Bool = true    // explicit when it clarifies intent
+‎ 
+
+// Inference from closures:
+let squares = numbers.map { \$0 \* \$0 } // \[Int]</code></pre>
+        </div>
+        <h3>Common pitfall</h3>
+        <p>Numeric literals default to <code>Double</code>. If you need <code>CGFloat</code> or <code>Float</code>,
+          convert explicitly.</p>
+        <div class="codebox" role="region" aria-label="Swift example: numeric literal casting"> <button
+            class="codebox-copy" type="button" aria-label="Copy code"> <svg width="16" height="16" viewBox="0 0 24 24"
+              fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg> </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>import CoreGraphics
+            ‎ 
+let radius: CGFloat = 12      // explicit type
+let area = .pi \* radius \* radius  //.pi is CGFloat-aware via overloads</code></pre>
+        </div>
+      </section>
+      <section class="section">
+        <h2 data-title="Value vs Reference types">Value vs Reference types</h2>
+        <p><code>struct</code> and <code>enum</code> are value types (copied on write), great for local reasoning and
+          thread safety. <code>class</code> is a reference type (shared identity), useful when you need inheritance or
+          shared mutable state.</p>
+        <div class="codebox" role="region" aria-label="Swift example: struct copy vs class share">
+          <button class="codebox-copy" type="button" aria-label="Copy code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>struct Point { var x = 0, y = 0 }
+‎ 
+class Counter { var value = 0 }
+
+‎ 
+var a = Point(x: 1, y: 2)
+var b = a          // copy
+b.x = 99           // a.x remains 1
+
+let c = Counter()
+let d = c          // share reference
+d.value = 42       // c.value is now 42 as well</code></pre>
+        </div>
+        <p>See also: <a href="https://developer.apple.com/documentation/swift/choosing-between-structures-and-classes"
+            target="_blank" rel="noopener">Choosing Between Structures and Classes — Apple Docs</a>.</p>
+      </section>
+
+
+      <section class="section">
+        <h2 data-title="Closures">Closures</h2>
+        <p>Closures are inline functions that capture values from context. Prefer capturing lists to avoid accidental
+          strong reference cycles.</p>
+        <div class="codebox" role="region" aria-label="Swift example: closure capture list">
+          <button class="codebox-copy" type="button" aria-label="Copy code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>final class ImageLoader {
+  var onComplete: ((UIImage) -&gt; Void)?
+
+  func load(completion: @escaping (UIImage) -&gt; Void) {
+    self.onComplete = { [weak self] image in
+        guard let self else { return }
+        // update UI or state
+        completion(image)
+    }
+  }
+
+
+}</code></pre>
+        </div>
+
+
+        <h3>Trailing closure & shorthand</h3>
+        <div class="codebox" role="region" aria-label="Swift example: trailing and shorthand closure syntax">
+          <button class="codebox-copy" type="button" aria-label="Copy code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>let doubled = [1, 2, 3].map { $0 * 2 }   // [2, 4, 6]
+let filtered = doubled.filter { \$0 > 2 } // \[4, 6]</code></pre>
+        </div>
+        <p>Reference: <a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures/"
+            target="_blank" rel="noopener">Closures — Swift Book</a>.</p>
+      </section>
+
+
+      <section class="section">
+        <h2 data-title="Protocols">Protocols</h2>
+        <p>Protocols define behavior contracts. They’re the backbone of decoupled architecture and testing. Use
+          protocol-oriented design to share default behavior via protocol extensions.</p>
+        <div class="codebox" role="region" aria-label="Swift example: protocol and mock for testing">
+          <button class="codebox-copy" type="button" aria-label="Copy code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>
+protocol UserServicing {
+  func fetchUser(id: String) async throws -&gt; User
+}
+‎ 
+struct LiveUserService: UserServicing {
+    func fetchUser(id: String) async throws -> User { /\* network \*/ User(id: id) }
+}
+‎ 
+struct MockUserService: UserServicing {
+  var stub: User
+  func fetchUser(id: String) async throws -> User { stub }
+}
+‎ 
+struct User { let id: String }
+
+</code></pre>
+        </div>
+
+
+        <h3>Protocol extensions</h3>
+        <div class="codebox" role="region" aria-label="Swift example: protocol default implementation">
+          <button class="codebox-copy" type="button" aria-label="Copy code">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white"
+                stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+              <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6"
+                stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </button>
+          <div class="codebox-toast">Copied</div>
+          <pre><code>
+protocol Identified { var id: String { get } }
+‎ 
+extension Identified {
+var isTemporary: Bool { id.hasPrefix("tmp\_") }
+}
+‎ 
+struct Document: Identified { let id: String }
+‎ 
+let doc = Document(id: "tmp\_123")
+print(doc.isTemporary) // true</code></pre>
+        </div>
+        <p>Deep dive: <a
+            href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols/"
+            target="_blank" rel="noopener">Protocols — Swift Book</a>.</p>
+      </section>
+      <section class="section">
+        <h2 data-title="Best practices">Best practices</h2>
+        <ul>
+          <li>Prefer value types by default; use classes when identity or inheritance is required.</li>
+          <li>Unwrap optionals with <code>if let</code>/<code>guard let</code>; avoid force unwraps.</li>
+          <li>Lean on type inference, but annotate where it clarifies intent.</li>
+          <li>Use capture lists (<code>[weak self]</code>) in closures that outlive their scope to avoid reference
+            cycles.</li>
+          <li>Model behaviors with protocols; provide shared behavior via protocol extensions.</li>
+        </ul>
+      </section>
+
+      <!-- 3) Conclusion (mandatory) -->
+      <section class="section">
+        <h2 data-title="Conclusion">Conclusion</h2>
+        <p>Swift’s fundamentals reward you every day: safer handling with optionals, concise yet type-safe code via
+          inference, predictable semantics from value types, expressive closures, and flexible architecture with
+          protocols. Master these and your UIKit/SwiftUI code becomes simpler to reason about and faster to test.</p>
+      </section>
+
+      <!-- 4) Next steps (mandatory, last) -->
+      <section class="section" style="margin-bottom: 40px;">
+        <h2 data-title="Next steps">Next steps</h2>
+        <p>Open a playground and implement a tiny “User Profile” feature: a value-type <code>User</code> model, a
+          <code>UserServicing</code> protocol with a mock, and a function that formats an optional display name safely.
+          Add a closure-based sorting function for recent logins. Keep each snippet small and build it up incrementally.
+        </p>
+        <ul>
+          <li><a href="https://developer.apple.com/documentation/swift/optional" target="_blank"
+              rel="noopener">Optionals — Apple Docs</a></li>
+          <li><a href="https://developer.apple.com/documentation/swift/choosing-between-structures-and-classes"
+              target="_blank" rel="noopener">Choosing Between Structures and Classes — Apple Docs</a>
+          </li>
+          <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/closures/"
+              target="_blank" rel="noopener">Closures — Swift Book</a></li>
+          <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols"
+              target="_blank" rel="noopener">Protocols — Swift Book</a></li>
+        </ul>
+      </section>
+    </div>
+
+    <nav class="right-rail">
+      <div class="floating-menu">
+        <ul id="toc"></ul>
+      </div>
+    </nav>
+  </main>
+
+  <script src="./main.js" defer></script>
+
+
+</body>
+
 </html>
