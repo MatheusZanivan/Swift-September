@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SwiftUI data flow (State, Binding, ObservedObject, StateObject, EnvironmentObject, @Observable) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 8: SwiftUI data flow (State, Binding, ObservedObject, StateObject, EnvironmentObject, @Observable)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 8</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>SwiftUI data flow (State, Binding, ObservedObject, StateObject, EnvironmentObject, @Observable)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction (mandatory, first) -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Getting data flow right is half the battle in SwiftUI. When views, models, and state are wired 
+            correctly, the UI becomes predictable and easier to maintain. This article is a concise but 
+            practical tour of the main SwiftUI property wrappers for state and data flow: 
+            <code>@State</code>, <code>@Binding</code>, <code>@ObservedObject</code>, <code>@StateObject</code>, 
+            <code>@EnvironmentObject</code>, and the new <code>@Observable</code> from iOS 17.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="@State and Binding">Local state with @State and Binding</h2>
+          <p>
+            Use <code>@State</code> for simple, view-local mutable values. When child views need to edit them, 
+            pass a <code>Binding</code> (via <code>$value</code>) instead of creating a new source of truth.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: using State and Binding">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct CounterView: View {
+  @State private var count = 0
+‎ 
+  var body: some View {
+    VStack {
+      Text("Count: \(count)")
+      Button("Increment") { count += 1 }
+      ChildCounter(count: $count) // pass binding
+    }
+  }
+}
+‎ 
+struct ChildCounter: View {
+  @Binding var count: Int
+‎ 
+  var body: some View {
+    Stepper("Child count", value: $count)
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="@ObservedObject vs @StateObject">ObservedObject vs StateObject</h2>
+          <p>
+            Both wrappers are for reference-type models conforming to <code>ObservableObject</code> (or <code>@Observable</code> in iOS 17+). 
+            The difference is ownership: 
+          </p>
+          <ul>
+            <li><code>@ObservedObject</code>: view does not own the model; it’s injected and managed elsewhere.</li>
+            <li><code>@StateObject</code>: view owns the model; it’s created once and survives re-renders.</li>
+          </ul>
+          <div class="codebox" role="region" aria-label="Swift example: using ObservedObject and StateObject">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>class TimerStore: ObservableObject {
+  @Published var ticks = 0
+}
+‎ 
+struct OwnedTimerView: View {
+  @StateObject private var store = TimerStore()
+  var body: some View { Text("Ticks: \(store.ticks)") }
+}
+‎ 
+struct InjectedTimerView: View {
+  @ObservedObject var store: TimerStore
+  var body: some View { Text("Ticks: \(store.ticks)") }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="@EnvironmentObject">App-wide dependencies with EnvironmentObject</h2>
+          <p>
+            <code>@EnvironmentObject</code> lets you share models across many views without manual parameter passing. 
+            It’s powerful but should be used carefully: don’t hide critical state in the environment without documenting it.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: using EnvironmentObject">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>class UserSettings: ObservableObject {
+  @Published var username: String = "Guest"
+}
+‎ 
+struct ProfileView: View {
+  @EnvironmentObject var settings: UserSettings
+  var body: some View {
+    Text("Hello, \(settings.username)")
+  }
+}
+‎ 
+// In SceneDelegate or App struct:
+// ContentView().environmentObject(UserSettings())</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Observation with @Observable">Observation with @Observable (iOS 17+)</h2>
+          <p>
+            The new <code>@Observable</code> macro simplifies models. No need for <code>@Published</code> 
+            or manual conformance. Subviews can use <code>@Bindable</code> for editing.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: using Observable and Bindable">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>@Observable
+                ‎ 
+class ProfileModel {
+  var name: String = ""
+}
+‎ 
+struct EditProfile: View {
+  @Bindable var model: ProfileModel
+  var body: some View {
+    TextField("Name", text: $model.name)
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Best practices">Best practices</h2>
+          <ul>
+            <li>Keep a single source of truth, pass <code>Binding</code> down.</li>
+            <li>Favor fine-grained models to reduce invalidations.</li>
+            <li>Move cancellation and async work into models, not views.</li>
+            <li>Avoid <code>@EnvironmentObject</code> for optional or feature-local state.</li>
+          </ul>
+        </section>
+
+        <!-- 3) Conclusion (mandatory) -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            SwiftUI data flow can look overwhelming at first, but each wrapper has a clear role. 
+            Use <code>@State</code> for local values, pass <code>Binding</code> for child editing, 
+            decide ownership with <code>@ObservedObject</code> vs <code>@StateObject</code>, 
+            and use <code>@EnvironmentObject</code> only when truly shared. 
+            With iOS 17, <code>@Observable</code> makes your models simpler and cleaner. 
+          </p>
+        </section>
+
+        <!-- 4) Next steps (mandatory, last) -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try refactoring a small SwiftUI view hierarchy to use a single source of truth with <code>@State</code> 
+            and pass bindings down. If you’re on iOS 17, experiment by converting an 
+            <code>ObservableObject</code> class to <code>@Observable</code>.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/swiftui/managing-model-data-in-your-app" target="_blank" rel="noopener">Managing model data in your app — SwiftUI Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/attributes/" target="_blank" rel="noopener">Attributes — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>

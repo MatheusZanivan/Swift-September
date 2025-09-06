@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>GCD and OperationQueue vs Swift Concurrency | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 6: GCD and OperationQueue vs Swift Concurrency" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 6</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>GCD and OperationQueue vs Swift Concurrency</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            For years, iOS developers have relied on Grand Central Dispatch (GCD) and OperationQueue to manage
+            concurrency. These tools remain powerful, but modern Swift Concurrency offers a safer and more expressive
+            model. Today we’ll compare these approaches, highlight practical use cases, and show how Swift Concurrency
+            simplifies async code in real projects.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Models compared">Models compared</h2>
+          <p>
+            GCD works at the queue and block level. OperationQueue builds on top of GCD, letting you define operations
+            with dependencies. Swift Concurrency introduces structured primitives like <code>async/await</code>,
+            <code>Task</code>, <code>TaskGroup</code>, and <code>actors</code>.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: GCD basics">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Dispatch to a background queue
+                ‎ 
+DispatchQueue.global().async {
+    // Do some work
+    print("Background work")
+}</code></pre>
+          </div>
+          <div class="codebox" role="region" aria-label="Swift example: async await basics">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Modern Swift Concurrency
+                ‎ 
+func fetchData() async throws -> String {
+    try await Task.sleep(nanoseconds: 1_000_000_000)
+    return "Done"
+}
+‎ 
+Task {
+    let result = try await fetchData()
+    print(result)
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Readability and safety">Readability and safety</h2>
+          <p>
+            With GCD, you often end up nesting closures, which makes error handling and cancellation tricky. Swift
+            Concurrency flattens the control flow, propagates cancellation, and uses actors to guard mutable state.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: nested callbacks vs async await">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Callback hell with GCD
+                ‎ 
+fetchUser { user in
+    fetchPosts(for: user) { posts in
+        print(posts)
+    }
+}
+‎ 
+// Swift Concurrency
+‎ 
+let posts = try await fetchPosts(for: user)</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Dependencies and fan-out">Dependencies and fan-out</h2>
+          <p>
+            OperationQueue is great when tasks depend on each other in a directed acyclic graph. Swift Concurrency
+            provides <code>TaskGroup</code> and <code>async let</code> for structured parallelism.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: task group">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Parallel fan-out with TaskGroup
+                ‎ 
+await withTaskGroup(of: String.self) { group in
+    group.addTask { await fetchA() }
+    group.addTask { await fetchB() }
+‎ 
+    for await value in group {
+        print(value)
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Cancellation and priority">Cancellation and priority</h2>
+          <p>
+            GCD has no built-in cancellation, and Operation requires manual checks. Swift Concurrency supports
+            cooperative cancellation with <code>Task.isCancelled</code> and manages priority inheritance via executors.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: cooperative cancellation">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>func performWork() async {
+    for i in 1...5 {
+        if Task.isCancelled { return }
+        print("Step \(i)")
+        try? await Task.sleep(nanoseconds: 500_000_000)
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Interoperability today">Interoperability today</h2>
+          <p>
+            You don’t need to migrate everything at once. Use GCD or OperationQueue for legacy APIs, QoS tuning, or
+            custom scheduling. Wrap old code into async world with <code>withCheckedContinuation</code> and incrementally
+            adopt modern concurrency where it matters most.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: bridging continuation">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Wrap a callback API
+                ‎ 
+func fetchDataAsync() async -> String {
+    await withCheckedContinuation { continuation in
+        legacyFetch { result in
+            continuation.resume(returning: result)
+        }
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            Swift Concurrency provides a safer, clearer, and more scalable model for async code. Use it by default, but
+            don’t be afraid to reach for OperationQueue or GCD when you need fine scheduling control or to integrate with
+            older APIs. Over time, migrating hot paths to structured concurrency will pay off in clarity and safety.
+          </p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try rewriting one of your GCD-based APIs using <code>async/await</code>. Compare readability, cancellation,
+            and testability. For deeper study, check Apple’s official concurrency documentation.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/swift/concurrency" target="_blank" rel="noopener">Concurrency - Swift Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/" target="_blank" rel="noopener">Concurrency - The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>

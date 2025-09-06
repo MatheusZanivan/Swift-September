@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Error handling patterns (throws, Result, async errors) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 7: Error handling patterns (throws, Result, async errors)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 7</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>Error handling patterns (throws, Result, async errors)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Error handling in Swift shapes how predictable and testable your code feels. Choosing the right pattern—throws, Result, or async errors—makes APIs clearer and avoids unnecessary complexity. Let’s explore when each approach works best, with concrete Swift examples.</p>
+        </section>
+
+        <!-- Topic 1 -->
+        <section class="section">
+          <h2 data-title="Use throws by default">Use throws by default</h2>
+          <p><code>throws</code> integrates naturally with <code>try</code> and Swift concurrency. It allows linear, easy-to-read error flows without extra wrapping. Use small <code>Error</code> enums to scope failures.</p>
+          <div class="codebox" role="region" aria-label="Swift example: throws in a function">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>enum NetworkError: Error {
+  case offline
+  case invalidResponse
+}
+‎ 
+func loadUser() throws -> String {
+  let connected = Bool.random()
+  guard connected else { throw NetworkError.offline }
+  return "User data"
+}
+‎ 
+do {
+  let user = try loadUser()
+  print(user)
+} catch {
+  print("Failed: \(error)")
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Topic 2 -->
+        <section class="section">
+          <h2 data-title="When to use Result">When to use Result</h2>
+          <p>Use <code>Result</code> when you need to pass success or failure across boundaries, store outcomes, or transform them without throwing immediately. It avoids pyramid-shaped switch statements through <code>map</code> and <code>flatMap</code>.</p>
+          <div class="codebox" role="region" aria-label="Swift example: Result type for outcomes">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>func fetchData(completion: @escaping (Result&lt;String, Error&gt;) -&gt; Void) {
+  let success = Bool.random()
+  if success {
+    completion(.success("Data payload"))
+  } else {
+    completion(.failure(NetworkError.invalidResponse))
+  }
+}
+‎ 
+fetchData { result in
+  switch result {
+  case .success(let data):
+    print(data)
+  case .failure(let error):
+    print("Error: \(error)")
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Topic 3 -->
+        <section class="section">
+          <h2 data-title="Async errors">Async errors</h2>
+          <p>Prefer <code>async throws</code> over callback-based error handling. It keeps code linear, supports cancellation, and integrates with Swift concurrency.</p>
+          <div class="codebox" role="region" aria-label="Swift example: async throws function">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>func downloadImage() async throws -&gt; UIImage {
+  // Simulate cancellation-aware async call
+  try await Task.sleep(nanoseconds: 500_000_000)
+  guard Bool.random() else { throw URLError(.badServerResponse) }
+  return UIImage()
+}
+‎ 
+Task {
+  do {
+    let image = try await downloadImage()
+    print("Image downloaded: \(image)")
+  } catch is CancellationError {
+    print("Cancelled")
+  } catch {
+    print("Failed: \(error)")
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Topic 4 -->
+        <section class="section">
+          <h2 data-title="Granularity and context">Granularity and context</h2>
+          <p>Define actionable, domain-specific error cases. Attach useful context like IDs or status codes. Wrap low-level errors with richer domain errors at boundaries.</p>
+          <div class="codebox" role="region" aria-label="Swift example: custom error with context">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>enum FileError: Error {
+  case notFound(path: String)
+  case unreadable(path: String, underlying: Error)
+}
+‎ 
+func readFile(at path: String) throws -&gt; String {
+  guard path.hasSuffix(".txt") else {
+    throw FileError.notFound(path: path)
+  }
+  // In real code: attempt FileManager read
+  return "File contents"
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Topic 5 -->
+        <section class="section">
+          <h2 data-title="Interoperability and migration">Interoperability and migration</h2>
+          <p>Bridge older callback APIs into <code>async throws</code> using continuations. At the edges, convert <code>NSError</code> into strong Swift <code>Error</code> types so internals remain predictable.</p>
+          <div class="codebox" role="region" aria-label="Swift example: bridging callbacks with continuations">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>func legacyFetch(completion: @escaping (String?, NSError?) -&gt; Void) {
+  completion("Legacy value", nil)
+}
+‎ 
+func modernFetch() async throws -&gt; String {
+  try await withCheckedThrowingContinuation { continuation in
+    legacyFetch { value, error in
+      if let error = error {
+        continuation.resume(throwing: error)
+      } else {
+        continuation.resume(returning: value ?? "")
+      }
+    }
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>Swift gives us multiple tools for error handling. Reach for <code>throws</code> first, fall back to <code>Result</code> when you need to carry failures across boundaries, and prefer <code>async throws</code> in modern concurrency code. With domain-specific errors and careful migration, you keep your codebase both clean and resilient.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try rewriting one of your older callback-based APIs into <code>async throws</code> using continuations. This will give you hands-on practice with Swift concurrency and error propagation.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/swift/error" target="_blank" rel="noopener">Error handling in Swift - Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/errorhandling/" target="_blank" rel="noopener">Error Handling - The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
