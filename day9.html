@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>SwiftUI layout & navigation | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 9: SwiftUI layout & navigation" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 9</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>SwiftUI layout & navigation</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>SwiftUI layouts and navigation have matured a lot since iOS 16. If you’re building new screens or refactoring older ones, understanding how the Layout protocol, stacks, grids, and the new NavigationStack work will help you create predictable and testable UIs. Let’s break down some practical tips with examples you can apply immediately.</p>
+        </section>
+
+        <!-- Topic 1 -->
+        <section class="section">
+          <h2 data-title="The Layout protocol">The Layout protocol</h2>
+          <p>iOS 16 introduced the <code>Layout</code> protocol, giving you fine control over custom containers. You implement <code>sizeThatFits</code> and <code>placeSubviews</code> to decide how children should be sized and positioned. You can also expose configuration via init parameters and add caching with <code>LayoutValueKey</code>.</p>
+          <div class="codebox" role="region" aria-label="Swift example: custom Layout">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct RowLayout: Layout {
+    func sizeThatFits(proposal: ProposedViewSize, 
+                      subviews: Subviews, 
+                      cache: inout ()) -> CGSize {
+        let width = proposal.width ?? 300
+        let height = subviews.map { $0.sizeThatFits(.unspecified).height }.max() ?? 0
+        return CGSize(width: width, height: height)
+    }
+
+    func placeSubviews(in bounds: CGRect, 
+                       proposal: ProposedViewSize, 
+                       subviews: Subviews, 
+                       cache: inout ()) {
+        var x = bounds.minX
+        for subview in subviews {
+            let size = subview.sizeThatFits(.unspecified)
+            subview.place(at: CGPoint(x: x, y: bounds.minY), 
+                          proposal: ProposedViewSize(size))
+            x += size.width
+        }
+    }
+}</code></pre>
+          </div>
+          <p>Combine it with <code>AnyLayout</code> to switch layouts at runtime.</p>
+        </section>
+
+        <!-- Topic 2 -->
+        <section class="section">
+          <h2 data-title="Stacks and grids">Stacks and grids</h2>
+          <p>For simple flows, <code>HStack</code>, <code>VStack</code>, and <code>ZStack</code> are all you need. When dealing with larger, scrollable sets of content, use <code>LazyVGrid</code> or <code>LazyHGrid</code>. Adaptive grid items automatically adjust for screen rotation and Dynamic Type.</p>
+          <div class="codebox" role="region" aria-label="Swift example: adaptive grid">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let columns = [GridItem(.adaptive(minimum: 120))]
+
+LazyVGrid(columns: columns) {
+    ForEach(0..<20, id: \.self) { index in
+        Text("Item \\(index)")
+            .padding()
+            .background(Color.blue.opacity(0.2))
+            .cornerRadius(8)
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Topic 3 -->
+        <section class="section">
+          <h2 data-title="Alignment and spacing">Alignment and spacing</h2>
+          <p>Centralize alignment rules by setting them on the parent container. Override only when necessary. For precise adjustments, use <code>alignmentGuide</code>. If space is tight, <code>LayoutThatFits</code> can provide fallbacks.</p>
+          <div class="codebox" role="region" aria-label="Swift example: alignmentGuide">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>HStack(alignment: .bottom) {
+    Text("Title")
+        .alignmentGuide(.bottom) { d in d[.bottom] - 5 }
+    Text("Subtitle")
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Topic 4 -->
+        <section class="section">
+          <h2 data-title="NavigationStack and NavigationPath">NavigationStack and NavigationPath</h2>
+          <p><code>NavigationStack</code> replaces the older <code>NavigationView</code>. It supports value-driven navigation with <code>navigationDestination(for:)</code> and persistence through <code>NavigationPath</code>. You can restore state and handle deep links by reconstructing paths from models.</p>
+          <div class="codebox" role="region" aria-label="Swift example: NavigationStack with data">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct ContentView: View {
+    @State private var path = NavigationPath()
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            List(1..<6) { number in
+                NavigationLink(value: number) {
+                    Text("Go to detail \\(number)")
+                }
+            }
+            .navigationDestination(for: Int.self) { number in
+                Text("Detail for \\(number)")
+            }
+        }
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- Topic 5 -->
+        <section class="section">
+          <h2 data-title="Best practices for navigation state">Best practices for navigation state</h2>
+          <p>Keep your navigation state close to the root <code>NavigationStack</code>. Store routes in <code>@State</code> or <code>@Observable</code> types, and pass lightweight values (like IDs or models), not entire views. This keeps navigation predictable, testable, and easier to restore.</p>
+          <div class="codebox" role="region" aria-label="Swift example: navigation state with models">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct Item: Hashable {
+    let id: UUID
+    let name: String
+}
+
+struct RootView: View {
+    @State private var path = NavigationPath()
+
+    let items = [
+        Item(id: UUID(), name: "One"),
+        Item(id: UUID(), name: "Two")
+    ]
+
+    var body: some View {
+        NavigationStack(path: $path) {
+            List(items, id: \.id) { item in
+                NavigationLink(value: item) {
+                    Text(item.name)
+                }
+            }
+            .navigationDestination(for: Item.self) { item in
+                Text("Detail: \\(item.name)")
+            }
+        }
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>SwiftUI’s layout and navigation APIs give us a powerful way to build adaptive, testable, and user-friendly interfaces. By mastering the Layout protocol, leveraging stacks and grids appropriately, and adopting NavigationStack with well-managed state, you’ll ship more resilient UIs that scale across devices and contexts.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try creating a custom layout that arranges views in a row, then wrap it inside an <code>AnyLayout</code> so you can switch to a grid at runtime. For navigation, experiment with saving and restoring a <code>NavigationPath</code>. These small exercises will make the concepts stick.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/swiftui/navigationstack" target="_blank" rel="noopener">NavigationStack — SwiftUI Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols/" target="_blank" rel="noopener">Protocols — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
