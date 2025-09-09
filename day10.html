@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>UIKit essentials | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 10: UIKit essentials" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ul><li>Day 10</li></ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>UIKit essentials</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Whether you’re just starting with UIKit or refining a production app, mastering the essentials helps you write cleaner code, avoid frustrating layout bugs, and build experiences that adapt gracefully across devices. This article covers the fundamentals: view controller lifecycle, Auto Layout, safe areas, trait collections, and accessibility-friendly features like Dynamic Type. Let’s walk through the pieces that make UIKit apps robust and future-proof.</p>
+        </section>
+
+        <!-- 2) Topics -->
+        <section class="section">
+          <h2 data-title="UIViewController lifecycle">UIViewController lifecycle</h2>
+          <p>The view controller lifecycle is the backbone of UIKit. Each method has a role: <code>viewDidLoad</code> for one-time setup, <code>viewWillAppear</code> for refreshing UI, and <code>viewDidAppear</code> for animations or analytics. Save state or stop work in <code>viewWillDisappear</code> and <code>viewDidDisappear</code>. Avoid expensive work in layout passes.</p>
+          <div class="codebox" role="region" aria-label="Swift example: view controller lifecycle">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>class HomeViewController: UIViewController {
+  override func viewDidLoad() {
+    super.viewDidLoad()
+    // One-time setup
+    view.backgroundColor = .systemBackground
+  }
+‎
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated)
+    // Refresh data or UI
+  }
+‎
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    // Start animations or analytics
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Auto Layout fundamentals">Auto Layout fundamentals</h2>
+          <p>Prefer constraints over manual frames. Auto Layout respects device variations and system features. Use <code>intrinsicContentSize</code>, content hugging, and compression resistance to reduce ambiguity and avoid conflicts.</p>
+          <div class="codebox" role="region" aria-label="Swift example: Auto Layout with constraints">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let label = UILabel()
+                ‎
+label.translatesAutoresizingMaskIntoConstraints = false
+label.text = "Hello Auto Layout"
+‎
+view.addSubview(label)
+‎
+NSLayoutConstraint.activate([
+  label.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+  label.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+])</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Safe areas & layout guides">Safe areas & layout guides</h2>
+          <p>Safe areas prevent your UI from colliding with notches, toolbars, and the home indicator. Use <code>safeAreaLayoutGuide</code> for positioning and <code>readableContentGuide</code> for comfortable text layouts on larger devices.</p>
+          <div class="codebox" role="region" aria-label="Swift example: safe area constraints">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let button = UIButton(type: .system)
+                ‎
+button.setTitle("Tap me", for: .normal)
+button.translatesAutoresizingMaskIntoConstraints = false
+‎
+view.addSubview(button)
+‎
+NSLayoutConstraint.activate([
+  button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+  button.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+])</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Trait collections & adaptation">Trait collections & adaptation</h2>
+          <p>Size classes (.compact, .regular) and display scale help apps adapt to different environments. Override <code>traitCollectionDidChange(_:)</code> when you need to react dynamically, such as multitasking on iPad. Prefer declarative logic over device-specific checks.</p>
+          <div class="codebox" role="region" aria-label="Swift example: trait collection handling">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+  super.traitCollectionDidChange(previousTraitCollection)
+  ‎
+  if traitCollection.horizontalSizeClass == .compact {
+    // Adjust layout for compact width
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Dynamic Type & appearances">Dynamic Type & appearances</h2>
+          <p>Support accessibility by opting into Dynamic Type and system colors. Setting <code>adjustsFontForContentSizeCategory = true</code> ensures your text scales. Use semantic colors like <code>.label</code> to automatically adapt to Dark Mode.</p>
+          <div class="codebox" role="region" aria-label="Swift example: Dynamic Type and Dark Mode">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let label = UILabel()
+                ‎
+label.font = UIFont.preferredFont(forTextStyle: .body)
+‎
+label.adjustsFontForContentSizeCategory = true
+‎
+label.textColor = .label</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>UIKit remains a core framework for iOS development. By respecting the lifecycle, leaning on Auto Layout, honoring safe areas, and embracing adaptation APIs, your apps will look polished across devices. Accessibility and system features like Dark Mode are not extras—they are table stakes for modern, inclusive apps.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try adding a label and button to a new view controller, constrain them with Auto Layout, and test across iPhone and iPad simulators. Then enable Dynamic Type and Dark Mode to see how your UI reacts. Practice adapting with <code>traitCollectionDidChange(_:)</code> by simulating multitasking on iPad.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/uikit" target="_blank" rel="noopener">UIKit — Apple Docs</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
