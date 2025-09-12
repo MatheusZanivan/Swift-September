@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Networking (URLSession, REST/GraphQL, WebSockets, reachability) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 12: Networking (URLSession, REST/GraphQL, WebSockets, reachability)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ul><li>Day 12</li></ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>Networking</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Networking is the backbone of most iOS apps, from fetching JSON over REST to subscribing to real-time streams with WebSockets. 
+            In this guide, we’ll look at practical techniques to build a fast and reliable network layer using URLSession, REST, GraphQL, WebSockets, and reachability. 
+            Along the way, we’ll touch on best practices that make your app more resilient in the real world.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="URLSession fundamentals">URLSession fundamentals</h2>
+          <p>
+            URLSession is the foundation for networking in Swift. Today, async/await makes it easier than ever to read and write requests clearly. 
+            Always configure sessions for your app’s needs: timeouts, caching, background transfers, or ephemeral privacy.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: simple async request with URLSession">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let url = URL(string: "https://api.example.com/data")!
+let (data, response) = try await URLSession.shared.data(from: url)
+print("Status:", (response as? HTTPURLResponse)?.statusCode ?? 0)</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="REST best practices">REST best practices</h2>
+          <p>
+            Strongly type your models with Codable and validate responses. Retry carefully only on safe HTTP verbs (GET, HEAD). 
+            Save bandwidth with ETags and centralize cross-cutting concerns like authentication or logging.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: decoding REST response">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct User: Codable {
+    let id: Int
+    let name: String
+}
+‎
+
+let (data, response) = try await URLSession.shared.data(from: url)
+guard (response as? HTTPURLResponse)?.statusCode == 200 else {
+    throw URLError(.badServerResponse)
+}
+‎
+let user = try JSONDecoder().decode(User.self, from: data)</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="GraphQL tips">GraphQL tips</h2>
+          <p>
+            GraphQL lets you fetch exactly the data you need. Use code generation to avoid stringly-typed queries, 
+            and handle errors distinctly from partial data. Co-locate queries with their feature modules for maintainability.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: GraphQL request payload">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let query = """
+query GetUser {
+  user(id: 1) {
+    id
+    name
+  }
+}
+"""
+let body = ["query": query]
+let requestData = try JSONSerialization.data(withJSONObject: body)</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="WebSockets">WebSockets</h2>
+          <p>
+            WebSockets are great for real-time updates. With URLSessionWebSocketTask you can maintain a single connection, send heartbeats, 
+            and handle messages continuously.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: WebSocket receive loop">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let task = URLSession.shared.webSocketTask(with: URL(string: "wss://echo.example.com")!)
+task.resume()
+‎
+func receive() {
+    task.receive { result in
+        switch result {
+        case .failure(let error):
+            print("Error:", error)
+        case .success(.string(let text)):
+            print("Message:", text)
+            receive()
+        default: break
+        }
+    }
+}
+receive()</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Reachability & resiliency">Reachability & resiliency</h2>
+          <p>
+            A strong networking layer doesn’t assume connectivity. Use NWPathMonitor to detect constraints, 
+            and pause or queue requests when offline. Provide fallbacks to keep the user in control.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: monitoring network path">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>import Network
+
+let monitor = NWPathMonitor()
+‎
+monitor.pathUpdateHandler = { path in
+    if path.status == .satisfied {
+        print("Online, constrained:", path.isConstrained)
+    } else {
+        print("Offline")
+    }
+}
+‎
+monitor.start(queue: .global())</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            A robust network layer is more than just making requests. By combining the right tools—URLSession, REST practices, GraphQL strategies, WebSocket handling, and reachability monitoring—you can build apps that feel fast and resilient in everyday use.
+          </p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try building a small app that fetches REST data, subscribes to a WebSocket, and reacts to connectivity changes. 
+            Start small, test offline scenarios, and then layer in resiliency patterns.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/foundation/urlsession" target="_blank" rel="noopener">URLSession — Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/concurrency/" target="_blank" rel="noopener">Swift Concurrency — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
