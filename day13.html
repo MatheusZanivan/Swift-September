@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Codable and JSON decoding | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 13: Codable and JSON decoding" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 13</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>Codable and JSON decoding</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Working with APIs is a daily task for iOS developers, and JSON is the most common format for data exchange. Swift makes this process much smoother thanks to the <code>Codable</code> protocol, which allows effortless conversion between JSON and native Swift types. However, many developers still find custom decoding and handling mismatched keys tricky. Let’s walk through the essentials and highlight best practices that make your networking code cleaner and more reliable.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Codable basics">Codable basics</h2>
+          <p>
+            <code>Codable</code> is simply the combination of <code>Encodable</code> and <code>Decodable</code>. This makes it possible to both encode Swift objects into JSON and decode JSON into Swift objects with almost no extra work.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: Codable basics">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct User: Codable {
+    let id: Int
+    let name: String
+}
+
+let json = """
+{ "id": 1, "name": "Alice" }
+""".data(using: .utf8)!
+
+let user = try JSONDecoder().decode(User.self, from: json)
+print(user.name) // Alice</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Customizing with CodingKeys">Customizing with CodingKeys</h2>
+          <p>
+            Sometimes JSON keys don’t match your Swift property names. You can fix this easily with a <code>CodingKeys</code> enum.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: CodingKeys">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct Article: Codable {
+    let title: String
+    let publishedAt: Date
+
+    enum CodingKeys: String, CodingKey {
+        case title
+        case publishedAt = "published_at"
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Nested JSON">Nested JSON</h2>
+          <p>
+            When APIs return nested structures, use <code>nestedContainer</code> or define nested types for clarity.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: nested JSON">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct Response: Codable {
+    struct Profile: Codable {
+        let username: String
+    }
+    let profile: Profile
+}
+
+let json = """
+{ "profile": { "username": "swift_dev" } }
+""".data(using: .utf8)!
+
+let response = try JSONDecoder().decode(Response.self, from: json)
+print(response.profile.username)</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Best practices">Best practices</h2>
+          <ul>
+            <li>Use <code>.convertFromSnakeCase</code> to simplify key mapping.</li>
+            <li>Validate JSON carefully in development to catch schema mismatches.</li>
+            <li>Keep your models small and focused—avoid dumping the entire API response into one struct.</li>
+          </ul>
+          <div class="codebox" role="region" aria-label="Swift example: convertFromSnakeCase">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let decoder = JSONDecoder()
+decoder.keyDecodingStrategy = .convertFromSnakeCase</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            Codable and JSON decoding are core skills for iOS developers. By mastering basics like <code>CodingKeys</code>, handling nested structures, and applying decoding strategies, you can build robust models that are easy to maintain and evolve as APIs change. Clean decoding logic pays off every time your app communicates with the network.
+          </p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try creating a small Swift struct for a real API you use (e.g., GitHub, OpenWeather) and practice customizing <code>CodingKeys</code>. Experiment with decoding nested objects and using <code>.convertFromSnakeCase</code>. For deeper insights, check out Apple’s documentation on Codable.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/foundation/archives_and_serialization/encoding_and_decoding_custom_types" target="_blank" rel="noopener">Encoding and Decoding Custom Types - Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/codable/" target="_blank" rel="noopener">Codable — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>

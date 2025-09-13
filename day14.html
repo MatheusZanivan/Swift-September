@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Persistence with SwiftData vs Core Data | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 14: Persistence with SwiftData vs Core Data" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 14</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>Persistence with SwiftData vs Core Data</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Choosing between SwiftData and Core Data is a common decision for iOS developers today. 
+            SwiftData is Apple’s new persistence framework, designed with a Swift-first, SwiftUI-friendly API. 
+            Core Data, on the other hand, has been powering iOS apps for years with proven reliability and 
+            advanced features. In this article, we’ll explore the differences across models, queries, 
+            lifecycle, and migrations—so you can decide which tool fits your next project.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Models">Models</h2>
+          <p>
+            SwiftData makes model definitions feel natural in Swift by using the <code>@Model</code> 
+            attribute on regular Swift types. Core Data requires you to use 
+            <code>NSManagedObject</code>, plus an Xcode Data Model file or code generation.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: SwiftData model">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>import SwiftData
+
+@Model
+class Note {
+    var title: String
+    var createdAt: Date
+    
+    init(title: String, createdAt: Date = .now) {
+        self.title = title
+        self.createdAt = createdAt
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Queries">Queries</h2>
+          <p>
+            SwiftData introduces type-safe queries with <code>@Query</code> and <code>FetchDescriptor</code>. 
+            Core Data still relies on <code>NSFetchRequest</code> with string-based <code>NSPredicate</code>.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: SwiftData query with @Query">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct NotesView: View {
+    @Query(sort: \.createdAt, order: .reverse)
+    private var notes: [Note]
+    
+    var body: some View {
+        List(notes) { note in
+            Text(note.title)
+        }
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Context & Lifecycle">Context & lifecycle</h2>
+          <p>
+            SwiftData abstracts away most of Core Data’s context boilerplate with <code>ModelContext</code>. 
+            In Core Data, you manually manage <code>NSManagedObjectContext</code>, including parent/child contexts, 
+            saves, and merges.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: Core Data context save">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Core Data example
+let context = persistentContainer.viewContext
+let note = NoteEntity(context: context)
+note.title = "Hello Core Data"
+
+do {
+    try context.save()
+} catch {
+    print("Save failed: \(error)")
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Migrations">Migrations</h2>
+          <p>
+            SwiftData supports automatic evolution for many schema changes. Core Data, while more verbose, 
+            supports both lightweight and heavyweight migrations with explicit mapping models.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: SwiftData schema evolution">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Adding a new property in SwiftData
+@Model
+class Note {
+    var title: String
+    var createdAt: Date
+    var tags: [String] = [] // SwiftData can often migrate this automatically
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="When to pick">When to pick</h2>
+          <p>
+            Use SwiftData if:
+          </p>
+          <ul>
+            <li>You’re building a SwiftUI-first app</li>
+            <li>You want simpler models and type-safe queries</li>
+            <li>You prefer automatic schema evolution</li>
+          </ul>
+          <p>
+            Stick with Core Data if:
+          </p>
+          <ul>
+            <li>You need advanced features (custom stores, batch operations)</li>
+            <li>You’re working on an existing large codebase</li>
+            <li>You want fine-grained control over contexts and migrations</li>
+          </ul>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            SwiftData makes persistence more approachable with modern Swift syntax and 
+            a tight integration into SwiftUI. Core Data remains a mature and powerful framework 
+            for complex needs. Your choice depends on the scale of your app, your team’s experience, 
+            and the level of control you require.
+          </p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try creating a small SwiftUI project with SwiftData and compare it against a Core Data setup. 
+            Notice the differences in boilerplate, ergonomics, and migrations. Practice helps clarify 
+            which tool feels right for your needs.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/coredata" target="_blank" rel="noopener">Core Data — Apple Docs</a></li>
+            <li><a href="https://developer.apple.com/documentation/swiftdata" target="_blank" rel="noopener">SwiftData — Apple Docs</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>

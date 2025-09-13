@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Secure storage and filesystem (Keychain, files, sandboxing) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 15: Secure storage and filesystem (Keychain, files, sandboxing)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 15</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>Secure storage and filesystem (Keychain, files, sandboxing)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Securing user data on iOS is not just about picking a folder. It’s about balancing confidentiality, durability, and performance. Apple provides two major tools: Keychain for secrets and the app sandbox filesystem for user content. Choosing the right one—and using it correctly—is essential for building secure and trustworthy apps.</p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Keychain for secrets">Keychain for secrets</h2>
+          <p>The Keychain is where you should store sensitive items like passwords, tokens, or cryptographic keys. It provides system-level security, optional biometric access, and integration with the Secure Enclave.</p>
+          <div class="codebox" role="region" aria-label="Swift example: saving to Keychain">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+<pre><code>// Example: saving a token securely
+let tokenData = "secretToken123".data(using: .utf8)!
+
+let query: [String: Any] = [
+  kSecClass as String: kSecClassGenericPassword,
+  kSecAttrAccount as String: "authToken",
+  kSecValueData as String: tokenData,
+  kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock
+]
+
+SecItemAdd(query as CFDictionary, nil)
+</code></pre>
+          </div>
+          <p>Always choose the correct accessibility level. For high-value secrets, combine with biometrics via <code>SecAccessControl</code>.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Using the sandbox filesystem">Using the sandbox filesystem</h2>
+          <p>The app sandbox provides specific directories for storing files. Each has a purpose:</p>
+          <ul>
+            <li><strong>Documents</strong>: User-visible and backed up.</li>
+            <li><strong>Application Support</strong>: App data that should persist and back up.</li>
+            <li><strong>Caches</strong>: Re-creatable files; not backed up.</li>
+            <li><strong>tmp</strong>: Temporary files, cleared by the system.</li>
+          </ul>
+          <div class="codebox" role="region" aria-label="Swift example: writing to Application Support">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+<pre><code>// Example: writing data to Application Support
+let fileManager = FileManager.default
+if let supportURL = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first {
+    let fileURL = supportURL.appendingPathComponent("userData.json")
+    let json = ["username": "swiftDev"]
+    let data = try JSONSerialization.data(withJSONObject: json)
+    try data.write(to: fileURL, options: [.atomic, .completeFileProtection])
+}
+</code></pre>
+          </div>
+          <p>Notice the use of <code>.atomic</code> and <code>.completeFileProtection</code> to protect integrity and confidentiality.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Common pitfalls">Common pitfalls</h2>
+          <ul>
+            <li>Do not store secrets in <code>UserDefaults</code>. It’s not secure.</li>
+            <li>Do not place important data in <code>Caches</code> or <code>tmp</code>, since they are not guaranteed to persist.</li>
+            <li>Always validate write operations: low disk or protection states can cause silent failures.</li>
+          </ul>
+          <div class="codebox" role="region" aria-label="Swift example: wrong vs right storage">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+<pre><code>// ❌ Wrong: storing token in UserDefaults
+UserDefaults.standard.set("secretToken", forKey: "authToken")
+
+// ✅ Right: store in Keychain (see earlier example)
+</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Sharing and sync">Sharing and sync</h2>
+          <p>Secrets can sync across devices via iCloud Keychain. For sharing files or secrets between your app and its extensions, use App Groups for filesystem storage and Keychain access groups for secrets.</p>
+          <p>On macOS, when accessing outside-sandbox files, request security-scoped bookmarks.</p>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>Keychain is for secrets, the sandbox filesystem is for content, and both require careful use of protection attributes and access rules. Respecting these boundaries helps you deliver apps that are both user-friendly and secure.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try implementing secure storage in a small demo app: save a login token to Keychain and user data to Application Support with file protection enabled. Observe how behavior changes when locking and unlocking the device.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/security/keychain_services" target="_blank" rel="noopener">Keychain Services - Apple Docs</a></li>
+            <li><a href="https://developer.apple.com/documentation/foundation/filemanager" target="_blank" rel="noopener">FileManager - Apple Docs</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
