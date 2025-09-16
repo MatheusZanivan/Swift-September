@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Design patterns (Delegation, Observer/NotificationCenter, Strategy, Adapter, Singleton) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 16: Design patterns (Delegation, Observer/NotificationCenter, Strategy, Adapter, Singleton)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ul><li>Day 16</li></ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>Design patterns (Delegation, Observer/NotificationCenter, Strategy, Adapter, Singleton)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction (mandatory, first) -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Design patterns are reusable solutions to common software problems. In iOS development, a handful of patterns show up constantly in app architecture and API usage. Mastering them makes your code cleaner, easier to test, and more adaptable to change. 
+            Today we’ll explore five core patterns every Swift developer should know: Delegation, Observer/NotificationCenter, Strategy, Adapter, and Singleton.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Delegation">Delegation</h2>
+          <p>
+            Delegation is all about one object telling another when something happened. UIKit uses this everywhere (e.g., UITableViewDelegate). Always mark delegates as <code>weak</code> to avoid retain cycles, and prefer small, focused protocols.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: delegation protocol">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>protocol FooViewDelegate: AnyObject {
+    func didTapButton()
+}
+
+class FooView {
+    weak var delegate: FooViewDelegate?
+    
+    func buttonPressed() {
+        delegate?.didTapButton()
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Observer / NotificationCenter">Observer / NotificationCenter</h2>
+          <p>
+            The Observer pattern lets multiple objects react to the same event without tight coupling. In iOS, NotificationCenter is the go-to tool. Always remove observers if you’re not using the block-based APIs to prevent leaks.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: NotificationCenter observer">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Posting a notification
+NotificationCenter.default.post(
+    name: .userDidLogin,
+    object: nil,
+    userInfo: ["userId": "123"]
+)
+
+// Observing
+NotificationCenter.default.addObserver(
+    forName: .userDidLogin,
+    object: nil,
+    queue: .main
+) { note in
+    print("User logged in:", note.userInfo?["userId"] ?? "")
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Strategy">Strategy</h2>
+          <p>
+            Strategy lets you swap algorithms at runtime. Instead of hardcoding logic, define a protocol and inject different implementations. This makes your code flexible and easy to test.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: strategy pattern">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>protocol PricingStrategy {
+    func price(for items: Int) -> Double
+}
+
+struct RegularPricing: PricingStrategy {
+    func price(for items: Int) -> Double { Double(items) * 10 }
+}
+
+struct DiscountPricing: PricingStrategy {
+    func price(for items: Int) -> Double { Double(items) * 8 }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Adapter">Adapter</h2>
+          <p>
+            The Adapter pattern helps incompatible types communicate. Wrap third-party APIs or legacy code behind your own interface so your app stays consistent and isolated from SDK changes.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: adapter pattern">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Legacy API
+class LegacyLogger {
+    func write(_ text: String) {
+        print("Legacy:", text)
+    }
+}
+
+// Adapter
+protocol Logger {
+    func log(_ message: String)
+}
+
+class LoggerAdapter: Logger {
+    private let legacy = LegacyLogger()
+    func log(_ message: String) {
+        legacy.write(message)
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Singleton">Singleton</h2>
+          <p>
+            A Singleton ensures a single shared instance. Use it sparingly for global stateful services like Analytics. Make initializers private and ensure thread safety.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: singleton">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>final class Analytics {
+    static let shared = Analytics()
+    private init() {}
+    
+    func track(event: String) {
+        print("Tracked:", event)
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            These five design patterns—Delegation, Observer, Strategy, Adapter, and Singleton—are essential tools for any iOS developer. They solve recurring problems in predictable ways, leading to more maintainable and testable code. Use them thoughtfully, and you’ll avoid reinventing the wheel while keeping your codebase healthy.
+          </p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try refactoring a part of your project using one of these patterns. For example, replace a hardcoded conditional with a Strategy, or wrap a third-party SDK with an Adapter. Small practice steps add up to architectural confidence.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/swift/protocols" target="_blank" rel="noopener">Protocols — Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols/" target="_blank" rel="noopener">Protocols - The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
