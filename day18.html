@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Dependency Injection and modularization | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 18: Dependency Injection and modularization" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ul><li>Day 18</li></ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>Dependency Injection and modularization</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction (mandatory, first) -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>As iOS projects grow, keeping them maintainable and scalable becomes a challenge. Two techniques that help immensely are <strong>Dependency Injection (DI)</strong> and <strong>Modularization</strong>. Together, they reduce coupling, improve testability, and ensure that your project can handle complexity without turning into a tangled mess.</p>
+          <p>In this article, we’ll walk through what DI and modularization mean in practice, why they matter for iOS apps, and how to use them effectively with simple, clear examples.</p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Dependency Injection (DI)">Dependency Injection (DI)</h2>
+          <p>Instead of letting a class create its own dependencies, DI means we pass them in from the outside. This makes code flexible, reusable, and testable.</p>
+          <div class="codebox" role="region" aria-label="Swift example: constructor injection">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>protocol APIService {
+    func fetchData() async throws -> String
+}
+
+class NetworkService: APIService {
+    func fetchData() async throws -> String {
+        return "Real data from server"
+    }
+}
+
+class ViewModel {
+    private let service: APIService
+    
+    // Dependency is injected
+    init(service: APIService) {
+        self.service = service
+    }
+}</code></pre>
+          </div>
+          <p>With this approach, we can easily swap the dependency for a mock in tests without touching production code.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Modularization">Modularization</h2>
+          <p>Large apps become faster to build and easier to manage when split into modules. A module could be a feature (e.g., “Authentication”) or a shared utility (e.g., “Networking”).</p>
+          <div class="codebox" role="region" aria-label="Swift example: framework import">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// In Authentication module
+public struct LoginRequest {
+    let username: String
+    let password: String
+}
+
+// In main app target
+import Authentication
+
+let request = LoginRequest(username: "test", password: "1234")</code></pre>
+          </div>
+          <p>By defining modules, you gain clearer boundaries and can reuse features across apps or teams.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Combining DI and Modularization">Combining DI and Modularization</h2>
+          <p>DI and modularization complement each other. Each module defines its responsibilities clearly, while DI wires them together at runtime.</p>
+          <div class="codebox" role="region" aria-label="Swift example: DI across modules">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Authentication module
+public protocol AuthService {
+    func login(user: String, password: String) async -> Bool
+}
+
+// Main app injects dependency
+class LoginViewModel {
+    private let authService: AuthService
+    
+    init(authService: AuthService) {
+        self.authService = authService
+    }
+}</code></pre>
+          </div>
+          <p>This keeps modules independent and testable, while allowing the main app to decide which implementations to use.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Testability">Testability</h2>
+          <p>By injecting dependencies and isolating modules, testing becomes straightforward. You can replace real services with mocks and test each module in isolation.</p>
+          <div class="codebox" role="region" aria-label="Swift example: mocking a dependency">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>class MockService: APIService {
+    func fetchData() async throws -> String {
+        return "Mocked data"
+    }
+}
+
+let viewModel = ViewModel(service: MockService())</code></pre>
+          </div>
+          <p>This makes unit testing faster and more reliable, without needing to spin up real infrastructure.</p>
+        </section>
+
+        <!-- 3) Conclusion (mandatory) -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>Dependency Injection and modularization are not academic extras—they’re essential tools for building apps that scale. They reduce coupling, improve testability, and keep your project healthy as new developers join and new features are added. Once you start applying them, you’ll find code reviews smoother and feature development less stressful.</p>
+        </section>
+
+        <!-- 4) Next steps (mandatory, last) -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try refactoring a small part of your project using DI, then extract one feature into its own module. Notice how it affects build times and testing. For deeper reading, check out official Apple docs:</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/swift/protocol" target="_blank" rel="noopener">Protocols — Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols/" target="_blank" rel="noopener">Protocols — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
