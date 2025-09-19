@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Package management & builds (SPM vs CocoaPods/Carthage, XCFrameworks) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 19: Package management & builds (SPM vs CocoaPods/Carthage, XCFrameworks)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul><li>Day 19</li></ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>Package management & builds (SPM vs CocoaPods/Carthage, XCFrameworks)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Package management directly affects how we build, ship, and maintain iOS apps. The choice between Swift Package Manager (SPM), CocoaPods, Carthage, and prebuilt XCFrameworks has trade-offs for build speed, reproducibility, and CI/CD pipelines. In this article, I’ll break down each option and share when they shine in real projects.</p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Swift Package Manager (SPM)">Swift Package Manager (SPM)</h2>
+          <p>SPM is Apple’s official tool for dependency management. It integrates tightly with Xcode, supports fast checkouts, and handles Swift codebases natively. If your dependencies are modern and available via SPM, it’s usually the cleanest choice.</p>
+          <div class="codebox" role="region" aria-label="Swift example: adding dependency with SPM">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Example Package.swift snippet
+dependencies: [
+    .package(url: "https://github.com/Alamofire/Alamofire.git", from: "5.9.0")
+]
+</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="CocoaPods and Carthage">CocoaPods and Carthage</h2>
+          <p>Legacy projects often rely on CocoaPods or Carthage. CocoaPods has the largest ecosystem and simplest onboarding, but can bloat workspaces and slow down clean builds. Carthage builds frameworks externally and integrates them more cleanly, though initial builds can be long. They’re still useful when libraries don’t yet support SPM, or if you’re mixing Swift and Objective-C.</p>
+          <div class="codebox" role="region" aria-label="Swift example: CocoaPods Podfile entry">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code># Example Podfile entry
+pod 'Alamofire', '~> 5.9'</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="XCFrameworks">XCFrameworks</h2>
+          <p>XCFrameworks are Apple’s recommended way to distribute prebuilt binaries. They package simulator and device slices together without lipo hacks. They’re great for distributing closed-source SDKs, heavy dependencies like ML frameworks, or improving CI times by caching binaries.</p>
+          <div class="codebox" role="region" aria-label="Swift example: importing an XCFramework">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Importing from a prebuilt XCFramework
+import MyAnalyticsSDK</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Build performance tips">Build performance tips</h2>
+          <p>To keep builds fast and reproducible, prefer SPM with pinned versions, enable caching in CI, and split monolithic projects into smaller Swift packages. For heavy dependencies, prebuilding as XCFrameworks can dramatically reduce cold start times.</p>
+          <div class="codebox" role="region" aria-label="Swift example: isolating dependency behind protocol">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Isolate heavy dependency behind a protocol
+protocol ImageProcessor {
+    func process(_ image: UIImage) -> UIImage
+}
+
+class AppImageProcessor: ImageProcessor {
+    func process(_ image: UIImage) -> UIImage {
+        // Delegate to heavy ML framework here
+        return image
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Reproducible CI">Reproducible CI</h2>
+          <p>To avoid “works on my machine” problems, always pin versions (commit <code>Package.resolved</code> for SPM), cache derived data in CI, and align build flags across local and cloud builds. CI should fail fast if dependencies drift.</p>
+          <div class="codebox" role="region" aria-label="Swift example: Package.resolved entry">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Example Package.resolved entry
+"state" : {
+  "branch" : null,
+  "revision" : "abc123...",
+  "version" : "5.9.0"
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>No single dependency manager is perfect for every iOS team. SPM is usually the best modern default, CocoaPods and Carthage still help with legacy code, and XCFrameworks are unbeatable for distributing binaries and speeding up CI. The key is to balance build performance with reproducibility and developer happiness.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try migrating one of your existing dependencies to SPM and measure the build time difference. For CI, experiment with caching derived data and observe how it impacts cold builds. To go deeper, review Apple’s official guidance on distributing binary frameworks.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/xcode/creating-a-multi-platform-binary-framework-bundle" target="_blank" rel="noopener">Creating a multi-platform binary framework bundle - Swift Docs</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
