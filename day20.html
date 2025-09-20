@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Testing (XCTest unit/UI, mocks/stubs, snapshot testing) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 20: Testing (XCTest unit/UI, mocks/stubs, snapshot testing)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 20</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>Testing (XCTest unit/UI, mocks/stubs, snapshot testing)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Testing is a core skill for every iOS developer. Well-written tests not only ensure code quality but also make refactoring and scaling much safer. In iOS, we have powerful tools to verify our code: XCTest for logic and UI testing, mocks and stubs to isolate dependencies, and snapshot testing to confirm visual consistency. Let’s walk through each approach with practical Swift examples.</p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Unit & UI Testing with XCTest">Unit & UI Testing with XCTest</h2>
+          <p><code>XCTest</code> is Apple’s built-in framework for both unit tests (small, focused checks on logic) and UI tests (simulated user interactions). Unit tests are fast and reliable, while UI tests give confidence that flows work end-to-end.</p>
+          <div class="codebox" role="region" aria-label="Swift example: basic XCTest unit test">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+<pre><code>import XCTest
+
+final class MathTests: XCTestCase {
+    func testAddition() {
+        let result = 2 + 2
+        XCTAssertEqual(result, 4, "2 + 2 should equal 4")
+    }
+}
+</code></pre>
+          </div>
+          <p>For UI testing, XCTest can launch the app, tap buttons, and assert that UI elements exist as expected.</p>
+          <div class="codebox" role="region" aria-label="Swift example: UI test with XCTest">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+<pre><code>func testLoginButton() {
+    let app = XCUIApplication()
+    app.launch()
+    
+    app.textFields["Username"].tap()
+    app.textFields["Username"].typeText("tester")
+    
+    app.buttons["Login"].tap()
+    XCTAssertTrue(app.staticTexts["Welcome"].exists)
+}
+</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Mocks & Stubs">Mocks & Stubs</h2>
+          <p>Mocks and stubs help isolate components under test. Instead of calling real APIs or databases, we replace them with lightweight test doubles. This keeps tests fast and avoids flaky external calls.</p>
+          <div class="codebox" role="region" aria-label="Swift example: mock service">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+<pre><code>protocol APIClient {
+    func fetchData() async throws -> String
+}
+
+final class MockAPIClient: APIClient {
+    func fetchData() async throws -> String {
+        return "Mock response"
+    }
+}
+</code></pre>
+          </div>
+          <p>Using a mock here avoids waiting on the network and lets us test our logic deterministically.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Snapshot Testing">Snapshot Testing</h2>
+          <p>Snapshot tests capture a rendered view and compare it against a stored reference image. If the view changes unexpectedly, the test fails. This is great for catching visual regressions.</p>
+          <div class="codebox" role="region" aria-label="Swift example: snapshot test with UIView">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+<pre><code>// Example using a popular snapshot framework
+func testProfileViewSnapshot() {
+    let view = ProfileView(user: .init(name: "Alice"))
+    assertSnapshot(matching: view, as: .image)
+}
+</code></pre>
+          </div>
+          <p>Snapshots should be updated intentionally—if a design change is expected, regenerate the reference image.</p>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Best Practices">Best Practices</h2>
+          <ul>
+            <li>Write small, focused unit tests for fast feedback.</li>
+            <li>Use mocks/stubs for external dependencies to avoid flakiness.</li>
+            <li>Rely on snapshot tests for UI consistency, but don’t overuse them.</li>
+            <li>Combine strategies: unit tests for logic, UI tests for flows, snapshots for visuals.</li>
+          </ul>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>Testing is more than a safety net—it’s an accelerator for building reliable apps. With XCTest, mocks, and snapshot tests, we can catch bugs early and refactor with confidence. Balancing speed, reliability, and coverage is the key to a healthy iOS testing strategy.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try writing a simple XCTest case in your project today. Replace one real dependency with a mock and see how much faster and more predictable your tests become. For UI, explore snapshot testing libraries to catch unexpected changes.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/xctest" target="_blank" rel="noopener">XCTest — Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/protocols" target="_blank" rel="noopener">Protocols — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
