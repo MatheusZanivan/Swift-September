@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>CI/CD, code signing & provisioning (Fastlane, Xcode Cloud, GitHub Actions) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 21: CI/CD, code signing & provisioning (Fastlane, Xcode Cloud, GitHub Actions)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 21</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>CI/CD, code signing & provisioning (Fastlane, Xcode Cloud, GitHub Actions)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Setting up CI/CD in iOS projects can feel daunting because of code signing and provisioning profiles. With the right tools, you can reduce manual effort, automate deployments, and ship more confidently. Today, we’ll look at how to manage signing, and how Fastlane, Xcode Cloud, and GitHub Actions help you create a smooth delivery pipeline.</p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Code Signing & Provisioning">Code Signing & Provisioning</h2>
+          <p>Every iOS build needs a certificate and a provisioning profile. Automating this step ensures your CI system can build and distribute without manual intervention. Apple recommends using API keys for App Store Connect instead of storing Apple ID credentials.</p>
+          <div class="codebox" role="region" aria-label="Swift example: checking signing identity">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Example: Checking signing identity in a build script
+import Foundation
+
+let identity = ProcessInfo.processInfo.environment["CODE_SIGN_IDENTITY"] ?? "Not set"
+print("Using signing identity: \\(identity)")
+</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Fastlane">Fastlane</h2>
+          <p>Fastlane automates repetitive tasks like code signing, building, and uploading to TestFlight. You can write lanes in Ruby, but your Swift project remains untouched. This makes it ideal for CI pipelines where consistency matters.</p>
+          <div class="codebox" role="region" aria-label="Swift example: triggering Fastlane from Swift script">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Swift script calling Fastlane
+import Foundation
+
+let task = Process()
+task.launchPath = "/usr/bin/env"
+task.arguments = ["fastlane", "beta"] // runs lane 'beta'
+try task.run()
+task.waitUntilExit()
+</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Xcode Cloud">Xcode Cloud</h2>
+          <p>Xcode Cloud is Apple’s native CI/CD system. It integrates directly with Xcode and App Store Connect, handling builds, tests, and distribution automatically. The benefit is less setup and first-class support for signing.</p>
+          <div class="codebox" role="region" aria-label="Swift example: simple unit test for Xcode Cloud pipeline">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Example: simple unit test
+import XCTest
+
+final class UserTests: XCTestCase {
+    func testUserName() {
+        let user = "Matheus"
+        XCTAssertEqual(user, "Matheus")
+    }
+}
+</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="GitHub Actions">GitHub Actions</h2>
+          <p>GitHub Actions is flexible and community-driven. You can configure workflows to build, test, and distribute your app across multiple environments. Signing assets should be stored in GitHub Secrets or fetched dynamically.</p>
+          <div class="codebox" role="region" aria-label="Swift example: environment variable in CI">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Reading CI secret in Swift
+if let apiKey = ProcessInfo.processInfo.environment["APP_STORE_CONNECT_API_KEY"] {
+    print("API key loaded for CI: \\(apiKey.prefix(5))...")
+} else {
+    print("No API key found")
+}
+</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Best practices">Best practices</h2>
+          <ul>
+            <li>Use encrypted storage like GitHub Secrets or Xcode Cloud’s keychain for sensitive assets.</li>
+            <li>Prefer App Store Connect API keys over Apple IDs for automation.</li>
+            <li>Keep CI builds reproducible by pinning dependencies.</li>
+            <li>Run unit tests before distributing builds.</li>
+          </ul>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>CI/CD makes iOS development more predictable and efficient. By combining secure code signing with tools like Fastlane, Xcode Cloud, and GitHub Actions, you can release faster while reducing risk. The key is to automate responsibly and protect sensitive assets along the way.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Try setting up a small workflow that builds your app on push and runs unit tests. Start with a single target, then add signing and distribution once you’re comfortable. Explore Apple’s guidance on continuous integration and signing to deepen your knowledge.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/xcode/distributing-your-app-for-beta-testing-and-releases" target="_blank" rel="noopener">Distributing your app — Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/LanguageGuide/Closures.html" target="_blank" rel="noopener">Closures — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
