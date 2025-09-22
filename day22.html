@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>App & Scene lifecycle, background work (BackgroundTasks) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 22: App & Scene lifecycle, background work (BackgroundTasks)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 22</li>
+          </ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>App & Scene lifecycle, background work (BackgroundTasks)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction (mandatory, first) -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Every iOS app moves through a series of lifecycle states that dictate how it runs and what work can be done.
+            Understanding these transitions—and pairing them with the right background work APIs—makes the difference between
+            a smooth, reliable experience and a stalled sync. Today we’ll cover the app and scene lifecycle, saving state, and
+            how to use the <code>BackgroundTasks</code> framework to keep your app responsive even when it’s not front and center.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections (2–6). Use multiple sections like this. -->
+        <section class="section">
+          <h2 data-title="Lifecycle 101">Lifecycle 101</h2>
+          <p>
+            The app lifecycle has two main delegates: <code>UIApplicationDelegate</code> handles app-wide events like launch and termination,
+            while <code>UISceneDelegate</code> manages each UI session (including multi-window support on iPad).
+          </p>
+          <p>
+            Your app can move through states such as inactive, active, background, and suspended. Hook into these transitions
+            to prepare your app for interruptions or backgrounding.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: scene lifecycle methods">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+    func sceneWillResignActive(_ scene: UIScene) {
+        // Pause ongoing tasks or disable UI updates
+    }
+
+    func sceneDidEnterBackground(_ scene: UIScene) {
+        // Save data or release shared resources
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="State-aware work">State-aware work</h2>
+          <p>
+            Save critical state in <code>sceneWillResignActive</code> and <code>sceneDidEnterBackground</code>. Keep these lightweight:
+            don’t run heavy operations here. Instead, offload to background tasks or background <code>URLSession</code> transfers
+            that survive app suspension.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: background URLSession">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let config = URLSessionConfiguration.background(withIdentifier: "com.example.sync")
+let session = URLSession(configuration: config)
+let task = session.downloadTask(with: url)
+task.resume()</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="BackgroundTasks API">BackgroundTasks API</h2>
+          <p>
+            The <code>BackgroundTasks</code> framework lets you schedule work when the system decides it’s optimal. You must
+            register your task identifiers in <code>Info.plist</code> and at app launch. Use <code>BGAppRefreshTask</code> for short,
+            network-based refreshes and <code>BGProcessingTask</code> for longer or CPU-intensive jobs.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: scheduling background task">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let request = BGAppRefreshTaskRequest(identifier: "com.example.refresh")
+request.earliestBeginDate = Date(timeIntervalSinceNow: 15 * 60) // 15 minutes
+try? BGTaskScheduler.shared.submit(request)</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Robust scheduling">Robust scheduling</h2>
+          <p>
+            Submit tasks once per identifier, set an <code>earliestBeginDate</code>, and always handle expiration by canceling work,
+            saving progress, and rescheduling. Combine with background <code>URLSession</code> for downloads and uploads
+            that can outlive your process.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: expiration handler">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>BGTaskScheduler.shared.register(
+    forTaskWithIdentifier: "com.example.refresh",
+    using: nil
+) { task in
+    guard let refreshTask = task as? BGAppRefreshTask else { return }
+    
+    refreshTask.expirationHandler = {
+        // Cancel work and save progress
+    }
+
+    performRefresh {
+        refreshTask.setTaskCompleted(success: true)
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Testing & telemetry">Testing & telemetry</h2>
+          <p>
+            Use <code>bgdispatch</code> or <code>simctl</code> to trigger tasks in the Simulator. Monitor logs in Console
+            under subsystem <code>com.apple.BackgroundTaskScheduler</code>. Always log duration and success/failure,
+            and use backoff strategies to prevent throttling.
+          </p>
+        </section>
+
+        <!-- 3) Conclusion (mandatory) -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            Mastering app and scene lifecycle events helps you know when to pause, save, or resume work.
+            Pairing that knowledge with <code>BackgroundTasks</code> ensures your app stays fresh and reliable,
+            even when the user isn’t watching. The key is lightweight lifecycle handlers, robust background scheduling,
+            and thoughtful testing.
+          </p>
+        </section>
+
+        <!-- 4) Next steps (mandatory, last) -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try adding a background refresh task to your own app: register it, schedule it, and confirm it runs in Simulator.
+            Keep tasks small and always test expiration handling. For more details, check Apple’s official docs.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/backgroundtasks" target="_blank" rel="noopener">BackgroundTasks — Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/properties/" target="_blank" rel="noopener">Properties — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
