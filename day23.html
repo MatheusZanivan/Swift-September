@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Deep linking and navigation (URL schemes, Universal Links) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 23: Deep linking and navigation (URL schemes, Universal Links)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 23</li>
+          </ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>Deep linking and navigation (URL schemes, Universal Links)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction (mandatory, first) -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Deep linking is the practice of opening a specific part of your app directly from a link. In iOS, you typically use either custom URL schemes or Universal Links. Implemented well, deep linking creates seamless user flows between apps, websites, and the right screens inside your app. This post explores both approaches, how to configure them, and how to give users a consistent navigation experience.</p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Custom URL Schemes">Custom URL Schemes</h2>
+          <p>Custom URL schemes are quick to set up and useful for app-to-app communication. They allow you to define your own scheme like <code>myapp://</code>. The downside is that they only work if the scheme is known and conflict-free.</p>
+          <div class="codebox" role="region" aria-label="Swift example: handling custom URL scheme">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// SceneDelegate.swift
+func scene(_ scene: UIScene, openURLContexts URLContexts: Set&lt;UIOpenURLContext&gt;) {
+    guard let url = URLContexts.first?.url else { return }
+    if url.scheme == "myapp", url.host == "profile" {
+        // Navigate to profile screen
+        navigateToProfile()
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Universal Links">Universal Links</h2>
+          <p>Universal Links work with standard HTTPS links. If your app is installed, the link opens the app; if not, it falls back to the website. This makes them the best choice for user-facing links.</p>
+          <div class="codebox" role="region" aria-label="Swift example: handling universal link">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// SwiftUI: handle incoming universal link
+@main
+struct MyApp: App {
+    var body: some Scene {
+        WindowGroup {
+            ContentView()
+                .onOpenURL { url in
+                    if url.pathComponents.contains("settings") {
+                        // Navigate to settings screen
+                    }
+                }
+        }
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Configuration">Configuration</h2>
+          <p>Both URL schemes and Universal Links require configuration. For URL schemes, add entries in <code>Info.plist</code>. For Universal Links, configure <code>Associated Domains</code> in Xcode and host an <code>apple-app-site-association</code> file on your domain.</p>
+          <div class="codebox" role="region" aria-label="Swift example: Info.plist URL scheme entry">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>&lt;key&gt;CFBundleURLTypes&lt;/key&gt;
+&lt;array&gt;
+  &lt;dict&gt;
+    &lt;key&gt;CFBundleURLSchemes&lt;/key&gt;
+    &lt;array&gt;
+      &lt;string&gt;myapp&lt;/string&gt;
+    &lt;/array&gt;
+  &lt;/dict&gt;
+&lt;/array&gt;</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Best practices">Best practices</h2>
+          <ul>
+            <li>Use Universal Links for user-facing flows since they feel natural and fallback to the web.</li>
+            <li>Keep custom URL schemes for internal integrations or special workflows.</li>
+            <li>Test links in multiple scenarios: app installed, app not installed, background, and terminated states.</li>
+            <li>Route deep links consistently through your navigation layer to avoid unexpected stack behavior.</li>
+          </ul>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Common pitfalls">Common pitfalls</h2>
+          <ul>
+            <li>Forgetting to host a valid <code>apple-app-site-association</code> file.</li>
+            <li>Not handling edge cases where the URL contains unexpected query parameters.</li>
+            <li>Breaking navigation state by pushing multiple screens instead of restoring the right stack.</li>
+          </ul>
+        </section>
+
+        <!-- 3) Conclusion (mandatory) -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>Deep linking is more than opening a link—it’s about building smooth, predictable user journeys. URL schemes are lightweight and useful for controlled integrations, while Universal Links scale better for real users. With proper configuration and careful routing, you can give users a seamless experience across apps and the web.</p>
+        </section>
+
+        <!-- 4) Next steps (mandatory, last) -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>A good practice exercise is to add both a custom URL scheme and a Universal Link to a small demo app. Try handling a deep link to a detail screen and make sure the app restores navigation correctly when cold-launched from a link.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/xcode/allowing-apps-and-websites-to-link-to-your-content" target="_blank" rel="noopener">Allowing apps and websites to link to your content - Apple Docs</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
