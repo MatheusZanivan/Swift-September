@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Notifications (local/push, notification extensions) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 24: Notifications (local/push, notification extensions)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul><li>Day 24</li></ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>Notifications (local/push, notification extensions)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction (mandatory, first) -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Notifications are one of the most powerful tools we have to keep users engaged and informed. 
+            But with that power comes responsibility: noisy or irrelevant alerts quickly erode trust. 
+            In iOS, we work with two primary types—local and push—and enhance them using notification extensions. 
+            This post distills the essentials: when to use each, how to configure them, and the key APIs that ensure a polished user experience.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Local vs Push">Local vs Push</h2>
+          <p>
+            Local notifications are scheduled directly on-device, perfect for reminders or offline alerts. 
+            Push notifications come from your server through Apple Push Notification service (APNs), used for real-time events like messages or updates.
+            Always request the correct authorization options early in the app’s lifecycle.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: request notification authorization">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>import UserNotifications
+
+UNUserNotificationCenter.current()
+  .requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+    if granted {
+      print("Notifications allowed")
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Registration & Routing">Registration & Routing</h2>
+          <p>
+            Use <code>UNUserNotificationCenter</code> to manage delivery and presentation. 
+            For push, capture the APNs device token safely and send it to your server. 
+            Prefer <code>apns-collapse-id</code> to avoid spamming users with duplicates.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: registering for remote notifications">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>import UIKit
+
+func application(_ application: UIApplication,
+  didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+    let tokenString = deviceToken.map { String(format: "%02x", $0) }.joined()
+    print("APNs token: \(tokenString)")
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Actionable & Focused UX">Actionable & Focused UX</h2>
+          <p>
+            Define categories with custom actions to let users respond directly from the notification. 
+            Always respect Focus modes and use <em>Time Sensitive</em> only when the content is truly critical.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: notification actions">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let replyAction = UNNotificationAction(
+  identifier: "REPLY_ACTION",
+  title: "Reply",
+  options: [.foreground]
+)
+
+let category = UNNotificationCategory(
+  identifier: "MESSAGE_CATEGORY",
+  actions: [replyAction],
+  intentIdentifiers: []
+)
+
+UNUserNotificationCenter.current()
+  .setNotificationCategories([category])</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Rich Push with Extensions">Rich Push with Extensions</h2>
+          <p>
+            With <code>UNNotificationServiceExtension</code>, you can modify content before display: 
+            download media, localize text, or decrypt payloads. 
+            For custom UIs, use <code>UNNotificationContentExtension</code> to add media players or buttons.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: service extension didReceive">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>class NotificationService: UNNotificationServiceExtension {
+  override func didReceive(
+    _ request: UNNotificationRequest,
+    withContentHandler contentHandler: @escaping (UNNotificationContent) -> Void
+  ) {
+    let bestAttempt = request.content.mutableCopy() as! UNMutableNotificationContent
+    bestAttempt.title = "[Modified] " + bestAttempt.title
+    contentHandler(bestAttempt)
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Quality & Delivery Guardrails">Quality & Delivery Guardrails</h2>
+          <p>
+            Use provisional authorization for a softer onboarding, group notifications with <code>threadIdentifier</code>, and always test with TestFlight or the APNs sandbox. 
+            If attachments or downloads fail, fall back gracefully to plain text so the message still reaches the user.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: grouping notifications">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let content = UNMutableNotificationContent()
+content.title = "Weekly Summary"
+content.threadIdentifier = "SUMMARY_GROUP"</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion (mandatory) -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            Great notifications balance relevance and polish. 
+            By understanding when to use local vs push, registering properly, adding meaningful actions, and leveraging extensions, 
+            you can create experiences that respect user attention and feel truly native. 
+            A little extra care with testing and fallbacks goes a long way to making your app dependable.
+          </p>
+        </section>
+
+        <!-- 4) Next steps (mandatory, last) -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try adding a provisional local notification to your own app, then expand it with a custom action. 
+            Experiment with a service extension to modify the content before delivery. 
+            Review Apple’s guidance to learn the finer points of notification design and delivery.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/usernotifications" target="_blank" rel="noopener">UserNotifications framework - Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/" target="_blank" rel="noopener">Swift Book — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
