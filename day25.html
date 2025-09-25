@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Widgets, Live Activities, and App Intents (WidgetKit, ActivityKit) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 25: Widgets, Live Activities, and App Intents (WidgetKit, ActivityKit)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 25</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>Widgets, Live Activities, and App Intents (WidgetKit, ActivityKit)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            When building glanceable experiences on iOS, you often need to combine WidgetKit, ActivityKit, and AppIntents. 
+            These APIs help you surface information quickly—on the Home Screen, Lock Screen, Dynamic Island, or even through Siri. 
+            Today we’ll look at how to pick the right surface, share models across targets, and avoid common pitfalls while shipping production-ready features.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Choosing the right surface">Choosing the right surface</h2>
+          <p>
+            Widgets are best for periodic snapshots. Live Activities shine when tracking session-based, real-time data like a food delivery. 
+            The Dynamic Island combines quick glances with interactive actions. Choosing the right surface up front saves rework later.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: defining a widget">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct ScoreWidget: Widget {
+    var body: some WidgetConfiguration {
+        StaticConfiguration(kind: "ScoreWidget", provider: ScoreProvider()) { entry in
+            ScoreView(entry: entry)
+        }
+        .configurationDisplayName("Live Score")
+        .description("Shows the current match score.")
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Model once, render many">Model once, render many</h2>
+          <p>
+            Avoid duplicate mapping layers. Keep a single source of truth in an App Group with SwiftData or Core Data. 
+            Both your app and extensions (widgets or Live Activities) can read from this shared container.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: using app group container">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Shared persistence container
+let container = NSPersistentContainer(
+    name: "SharedModel",
+    managedObjectModel: model
+)
+
+if let storeURL = FileManager.default
+    .containerURL(forSecurityApplicationGroupIdentifier: "group.com.example.app")?
+    .appendingPathComponent("SharedModel.sqlite") {
+    let description = NSPersistentStoreDescription(url: storeURL)
+    container.persistentStoreDescriptions = [description]
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Update strategies">Update strategies</h2>
+          <p>
+            Widgets update on a timeline and should avoid network calls in <code>body</code>. 
+            Live Activities can be updated locally or via push with a token. 
+            Keep server-driven updates for freshness-critical data, while allowing local changes for lightweight updates.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: updating a live activity">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>for activity in Activity&lt;OrderAttributes&gt;.activities {
+    await activity.update(using: .init(status: .delivered))
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Deep actions with AppIntents">Deep actions with AppIntents</h2>
+          <p>
+            Use <code>AppIntent</code> for widget buttons, Live Activity actions, and even Spotlight/Siri. 
+            Prefer parameterized intents over URL schemes for type safety and clarity.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: defining an AppIntent">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct MarkTaskDoneIntent: AppIntent {
+    static var title: LocalizedStringResource = "Mark Task Done"
+
+    @Parameter(title: "Task ID")
+    var taskID: String
+
+    func perform() async throws -&gt; some IntentResult {
+        TaskManager.shared.markDone(id: taskID)
+        return .result()
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Design and testing">Design and testing</h2>
+          <p>
+            Respect constraints: widgets have limited space, so concise text and system symbols work best. 
+            Always test different widget families and Lock Screen variants. 
+            Simulate expired timelines and connectivity loss to ensure graceful degradation.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: reloading widget timelines">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Trigger widget reload when data changes
+WidgetCenter.shared.reloadTimelines(ofKind: "ScoreWidget")</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            Widgets, Live Activities, and AppIntents let you extend your app into the system’s most visible surfaces. 
+            By choosing the right surface, sharing data models, and following update best practices, you’ll ship experiences that feel fast, reliable, and native. 
+            The key is to design for constraints and test thoroughly under real conditions.
+          </p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try creating a simple Lock Screen widget that displays static text, then extend it into a Live Activity that updates in real time. 
+            Explore AppIntents to wire up a button inside your widget to a real action in your app. 
+            Check Apple’s documentation for full API details.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/widgetkit" target="_blank" rel="noopener">WidgetKit - Apple Docs</a></li>
+            <li><a href="https://developer.apple.com/documentation/activitykit" target="_blank" rel="noopener">ActivityKit - Apple Docs</a></li>
+            <li><a href="https://developer.apple.com/documentation/appintents" target="_blank" rel="noopener">AppIntents - Apple Docs</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
