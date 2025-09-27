@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Accessibility and localization (VoiceOver, Dynamic Type, RTL, dark mode) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 26: Accessibility and localization (VoiceOver, Dynamic Type, RTL, dark mode)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+        <ul><li>Day 26</li></ul>
+      	</nav>
+
+        <div class="day-hero">
+          <h1>Accessibility and localization (VoiceOver, Dynamic Type, RTL, dark mode)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Accessibility and localization are not extras — they’re essentials. Building iOS apps that adapt to all users makes them more inclusive, future-proof, and user-centered. 
+            From VoiceOver support to dark mode, it’s our responsibility as developers to ensure every user can interact with the app comfortably. 
+            In this post, we’ll explore four key areas: VoiceOver, Dynamic Type, right-to-left (RTL) layout support, and dark mode.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="VoiceOver">VoiceOver</h2>
+          <p>
+            VoiceOver is a screen reader that helps visually impaired users navigate your app. 
+            Every interactive element should have clear accessibility labels and traits. 
+            Avoid exposing raw technical details like variable names.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: VoiceOver accessibility label">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let button = UIButton(type: .system)
+button.setTitle("Submit", for: .normal)
+
+// Accessibility
+button.accessibilityLabel = "Submit form"
+button.accessibilityTraits = .button</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Dynamic Type">Dynamic Type</h2>
+          <p>
+            Dynamic Type ensures text scales with user font settings. 
+            Use <code>UIFontMetrics</code> and <code>preferredFont</code> for adaptive text that respects system accessibility preferences.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: Dynamic Type with UIFontMetrics">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let label = UILabel()
+label.numberOfLines = 0
+
+// Dynamic Type
+label.font = UIFont.preferredFont(forTextStyle: .body)
+label.adjustsFontForContentSizeCategory = true</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Right-to-Left Support">Right-to-Left (RTL) Support</h2>
+          <p>
+            Some languages, like Arabic and Hebrew, are written right-to-left. 
+            iOS supports layout mirroring automatically if you use Auto Layout and system controls. 
+            Always test by forcing RTL in the scheme run settings.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: RTL-aware text alignment">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let label = UILabel()
+label.text = NSLocalizedString("welcome_message", comment: "Welcome text")
+
+// Auto alignment with respect to layout direction
+label.textAlignment = .natural</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Dark Mode">Dark Mode</h2>
+          <p>
+            Hard-coded colors don’t adapt to system appearance. Use semantic system colors that automatically adjust between light and dark modes.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: Semantic colors for dark mode">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let view = UIView()
+view.backgroundColor = .systemBackground
+
+let label = UILabel()
+label.textColor = .label</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            Accessibility and localization are not optional. 
+            By supporting VoiceOver, Dynamic Type, RTL, and dark mode, we make apps that are usable by more people and resilient to future platform changes. 
+            These practices should be part of your development process from day one.
+          </p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Try running your app with larger font sizes, in dark mode, and in RTL languages to see how it adapts. 
+            Explore the Accessibility Inspector in Xcode to validate your UI. 
+            For further reading, check Apple’s official accessibility documentation.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/accessibility/ios/" target="_blank" rel="noopener">Accessibility on iOS - Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/LanguageGuide/StringsAndCharacters.html" target="_blank" rel="noopener">Strings and Characters — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
