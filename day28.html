@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Core Animation & rendering, SwiftUI performance | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 28: Core Animation & rendering, SwiftUI performance" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 28</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>Core Animation & rendering, SwiftUI performance</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction (mandatory, first) -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>Smooth animations and responsive UIs don’t happen by chance. They come from knowing how Core Animation works under the hood and how SwiftUI manages rendering. Today we’ll explore practical tips for measuring, diagnosing, and improving rendering performance in real-world apps.</p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="Measuring performance">Measuring performance</h2>
+          <p>Start by observing before fixing. Instruments provides a <em>Core Animation</em> template to measure FPS, frame render times, and detect dropped frames. In Xcode, you can also enable “Color Blended Layers” and “Color Offscreen-Rendered” to visualize rendering issues.</p>
+          <div class="codebox" role="region" aria-label="Swift example: enabling Instruments profiling">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Run your app with Instruments → Core Animation
+// Inspect FPS and frame render times
+// Enable "Color Blended Layers" in Debug menu for overdraw analysis</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Reducing view complexity">Reducing view complexity</h2>
+          <p>Deeply nested stacks and groups cause SwiftUI to perform more work than necessary. Flatten your hierarchy where possible, and prefer lightweight views. Cache expensive layouts and images to avoid repeated recomputation.</p>
+          <div class="codebox" role="region" aria-label="Swift example: caching an expensive view">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct ExpensiveView: View {
+  @State private var cached = Image(systemName: "bolt.fill")
+
+  var body: some View {
+    cached
+      .resizable()
+      .scaledToFit()
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Avoiding offscreen traps">Avoiding offscreen traps</h2>
+          <p>Certain visual effects trigger offscreen rendering: large blurs, heavy shadows without a <code>shadowPath</code>, masks combined with corner radius, or <code>UIVisualEffectView</code>. These require extra GPU passes. Use explicit <code>shadowPath</code> and smaller corner radii when possible.</p>
+          <div class="codebox" role="region" aria-label="Swift example: using shadowPath">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>let layer = CALayer()
+layer.shadowPath = UIBezierPath(
+  roundedRect: CGRect(x: 0, y: 0, width: 100, height: 100),
+  cornerRadius: 8
+).cgPath</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="State management in SwiftUI">State management in SwiftUI</h2>
+          <p>SwiftUI’s diffing is powerful, but misuse of property wrappers can cause unnecessary redraws. Use <code>@StateObject</code> for models owned by a view, <code>@ObservedObject</code> for injected ones, and <code>@MainActor</code> for UI updates.</p>
+          <div class="codebox" role="region" aria-label="Swift example: using StateObject vs ObservedObject">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>final class CounterModel: ObservableObject {
+  @Published var count = 0
+}
+
+struct CounterView: View {
+  @StateObject private var model = CounterModel()
+
+  var body: some View {
+    Text("Count: \\(model.count)")
+  }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Animation hygiene">Animation hygiene</h2>
+          <p>Animate properties that are cheap for Core Animation: opacity, transforms, and position. Avoid animating layout-heavy changes every frame, which forces layout recalculation.</p>
+          <div class="codebox" role="region" aria-label="Swift example: animating opacity">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>withAnimation(.easeInOut) {
+  isVisible.toggle() // animating opacity is efficient
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>Performance in SwiftUI and Core Animation is about knowing where rendering costs come from. By profiling, simplifying view hierarchies, avoiding offscreen traps, and keeping animations lean, you move from janky interfaces to silky-smooth apps.</p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>Practice by profiling one of your existing views with Instruments. Try enabling “Color Blended Layers” and then refactor the view to reduce overdraw. Keep a log of FPS improvements to see the impact of your changes.</p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/quartzcore" target="_blank" rel="noopener">Core Animation — Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/" target="_blank" rel="noopener">Swift Language Guide — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>

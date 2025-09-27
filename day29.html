@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Privacy & data handling (ATT, permissions, privacy manifests) | Swift September</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <meta name="description" content="Swift September – Day 29: Privacy & data handling (ATT, permissions, privacy manifests)" />
+  </head>
+  <body class="day">
+    <main class="page-grid">
+      <aside class="left-rail">
+        <div class="floating-cover" aria-hidden="true"></div>
+      </aside>
+
+      <div class="day-content">
+        <nav class="breadcrumbs" aria-label="Breadcrumb">
+          <ul>
+            <li>Day 29</li>
+          </ul>
+        </nav>
+
+        <div class="day-hero">
+          <h1>Privacy & data handling (ATT, permissions, privacy manifests)</h1>
+        </div>
+
+        <div class="author-row">
+          <img
+            src="./images/profilePic.png"
+            alt="Author"
+            class="author-avatar"
+            width="40"
+            height="40"
+            loading="lazy"
+          />
+          <div class="author-name">
+            <strong>Matheus Z. Andrade</strong> | iOS Engineer
+          </div>
+          <div class="author-line" aria-hidden="true"></div>
+        </div>
+
+        <!-- 1) Introduction -->
+        <section class="section">
+          <h2 data-title="Introduction">Introduction</h2>
+          <p>
+            Privacy in iOS development isn’t a single switch you flip—it’s a system of deliberate choices. Apple sets high standards through App Tracking Transparency (ATT), permission flows, and privacy manifests. As engineers, our small design decisions compound into user trust, compliance with regulations, and a healthier app ecosystem. Today we’ll walk through practical moves you can make to handle privacy and data with care.
+          </p>
+        </section>
+
+        <!-- 2) Topic sections -->
+        <section class="section">
+          <h2 data-title="App Tracking Transparency (ATT)">App Tracking Transparency (ATT)</h2>
+          <p>
+            ATT requires that apps request explicit permission before tracking users across apps or websites. It’s essential to explain the value before the system prompt and provide a graceful experience if the user denies. Instead of fingerprinting, use Apple’s attribution APIs.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: requesting ATT authorization">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>import AppTrackingTransparency
+import AdSupport
+
+func requestTrackingPermission() {
+    ATTrackingManager.requestTrackingAuthorization { status in
+        switch status {
+        case .authorized:
+            print("Tracking authorized")
+        case .denied, .restricted, .notDetermined:
+            print("Tracking not available")
+        @unknown default:
+            break
+        }
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Permission UX">Permission UX</h2>
+          <p>
+            Permissions should be requested at the right moment (“just-in-time”), with clear purpose strings. Always request the lowest necessary scope, such as “While Using the App” for location. Provide a fallback path when access is denied.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: requesting location when in use">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>import CoreLocation
+
+class LocationManager: NSObject, CLLocationManagerDelegate {
+    private let manager = CLLocationManager()
+
+    func requestAccess() {
+        manager.delegate = self
+        manager.requestWhenInUseAuthorization()
+    }
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Privacy Manifests">Privacy Manifests</h2>
+          <p>
+            Privacy manifests document what data your app collects and which domains it contacts. With iOS 17 and Xcode 15, these manifests also declare usage of Required Reason APIs. Treat warnings from Xcode as blockers—don’t ship without resolving them.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: verifying manifest usage">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>// Example: Treat Xcode privacy manifest warnings as errors
+// In your build settings, enable 'Treat Warnings as Errors'
+// so privacy manifest issues block builds.</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Minimize and localize data">Minimize and localize data</h2>
+          <p>
+            Collect only what you need, prefer on-device processing, and protect sensitive information. Store credentials in the Keychain, not in UserDefaults, and always encrypt data in transit and at rest.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: storing secret in Keychain">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>import Security
+
+func saveToken(_ token: String) {
+    let data = Data(token.utf8)
+    let query: [String: Any] = [
+        kSecClass as String: kSecClassGenericPassword,
+        kSecAttrAccount as String: "authToken",
+        kSecValueData as String: data
+    ]
+    SecItemAdd(query as CFDictionary, nil)
+}</code></pre>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 data-title="Audit and hygiene">Audit and hygiene</h2>
+          <p>
+            Privacy work doesn’t end after implementation. Audit logs for personal data, define retention and deletion paths, and test your app with permission denial scenarios. Each time you add an SDK, re-check your manifests and data flows.
+          </p>
+          <div class="codebox" role="region" aria-label="Swift example: redacting sensitive data from logs">
+            <button class="codebox-copy" type="button" aria-label="Copy code">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M9 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2Z" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M7 15H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h7a2 2 0 0 1 2 2v1" stroke="white" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="codebox-toast">Copied</div>
+            <pre><code>struct User: Codable {
+    let id: String
+    let email: String
+}
+
+func logUser(_ user: User) {
+    // Redact sensitive fields
+    print("User logged in: id=\(user.id), email=REDACTED")
+}</code></pre>
+          </div>
+        </section>
+
+        <!-- 3) Conclusion -->
+        <section class="section">
+          <h2 data-title="Conclusion">Conclusion</h2>
+          <p>
+            Strong privacy and data handling practices aren’t optional—they’re part of building trustworthy apps. Whether it’s ATT prompts, permission flows, manifests, or secure storage, each choice shapes user trust and keeps your app aligned with Apple’s requirements. The mindset: minimize, secure, and verify continuously.
+          </p>
+        </section>
+
+        <!-- 4) Next steps -->
+        <section class="section" style="margin-bottom: 40px;">
+          <h2 data-title="Next steps">Next steps</h2>
+          <p>
+            Review your app’s current permissions and manifests. Pick one permission and test both acceptance and denial flows. Try adding a privacy manifest to a side project to get familiar with Xcode’s tooling. Keep security reviews a regular part of your release cycle.
+          </p>
+          <ul>
+            <li><a href="https://developer.apple.com/documentation/bundleresources/privacy_manifest_files" target="_blank" rel="noopener">Privacy manifest files - Apple Docs</a></li>
+            <li><a href="https://docs.swift.org/swift-book/documentation/the-swift-programming-language/" target="_blank" rel="noopener">Swift Language Guide — The Swift Programming Language</a></li>
+          </ul>
+        </section>
+      </div>
+
+      <nav class="right-rail">
+        <div class="floating-menu">
+          <ul id="toc"></ul>
+        </div>
+      </nav>
+    </main>
+
+    <script src="./main.js" defer></script>
+  </body>
+</html>
